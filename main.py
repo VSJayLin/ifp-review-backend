@@ -52,7 +52,7 @@ async def review(req: ReviewRequest):
 
     if resp.status_code == 429:
         raise HTTPException(429, "Groq 每分鐘額度已用完，請稍後再試。")
-    if not resp.ok:
+    if resp.status_code != 200:
         err = data.get("error", {}).get("message", resp.text[:200])
         raise HTTPException(502, f"Groq API 錯誤：{err}")
 
