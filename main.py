@@ -1,7 +1,10 @@
-import os, httpx
+import os, httpx, logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -17,7 +20,6 @@ app.add_middleware(
 CEREBRAS_KEY = os.environ.get("CEREBRAS_API_KEY", "")
 GROQ_KEY     = os.environ.get("GROQ_API_KEY", "")
 
-# Cerebras 主力（1M tokens/day，60K TPM），Groq 備用（100K/day，12K TPM）
 PROVIDERS = [
     {
         "name": "cerebras/llama-4-scout",
@@ -26,7 +28,7 @@ PROVIDERS = [
         "key_env": "CEREBRAS",
     },
     {
-        "name": "cerebras/qwen3-32b",
+        "name": "cerebras/qwen-3-32b",
         "url": "https://api.cerebras.ai/v1/chat/completions",
         "model": "qwen-3-32b",
         "key_env": "CEREBRAS",
@@ -45,7 +47,12 @@ class ReviewRequest(BaseModel):
 
 @app.get("/")
 def health():
-    return {"status": "ok", "providers": [p["name"] for p in PROVIDERS]}
+    return {
+        "status": "ok",
+        "providers": [p["name"] for p in PROVIDERS],
+        "cerebras_key_set": bool(CEREBRAS_KEY),
+        "groq_key_set": bool(GROQ_KEY),
+    }
 
 @app.post("/review")
 async def review(req: ReviewRequest):
@@ -56,9 +63,11 @@ async def review(req: ReviewRequest):
             key = CEREBRAS_KEY if p["key_env"] == "CEREBRAS" else GROQ_KEY
             if not key:
                 last_error = f"{p['name']}: API key not set"
+                logger.warning(last_error)
                 continue
 
             try:
+                logger.info(f"Trying {p['name']}...")
                 resp = await client.post(
                     p["url"],
                     headers={
@@ -76,22 +85,29 @@ async def review(req: ReviewRequest):
                     },
                 )
                 data = resp.json()
+                logger.info(f"{p['name']} status: {resp.status_code}")
 
                 if resp.status_code == 429:
                     last_error = f"{p['name']}: rate limited"
+                    logger.warning(last_error)
                     continue
 
                 if resp.status_code != 200:
-                    last_error = f"{p['name']}: {data.get('error', {}).get('message', resp.text[:200])}"
+                    err_msg = data.get('error', {}).get('message', str(data)[:300])
+                    last_error = f"{p['name']}: HTTP {resp.status_code} - {err_msg}"
+                    logger.error(last_error)
                     continue
 
                 text = data.get("choices", [{}])[0].get("message", {}).get("content", "")
                 if text.strip():
+                    logger.info(f"Success with {p['name']}")
                     return {"result": text, "model": p["name"]}
 
                 last_error = f"{p['name']}: empty response"
+                logger.warning(last_error)
 
             except Exception as e:
                 last_error = f"{p['name']}: {str(e)}"
+                logger.error(last_error)
 
     raise HTTPException(502, f"所有模型均失敗：{last_error}")
