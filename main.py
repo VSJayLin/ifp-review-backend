@@ -20,12 +20,17 @@ app.add_middleware(
 CEREBRAS_KEY = os.environ.get("CEREBRAS_API_KEY", "")
 GROQ_KEY     = os.environ.get("GROQ_API_KEY", "")
 
-# gpt-oss-120b 是確認可用的，其他等查到正確 ID 再加
 PROVIDERS = [
     {
         "name": "cerebras/gpt-oss-120b",
         "url": "https://api.cerebras.ai/v1/chat/completions",
         "model": "gpt-oss-120b",
+        "key_env": "CEREBRAS",
+    },
+    {
+        "name": "cerebras/zai-glm-4.7",
+        "url": "https://api.cerebras.ai/v1/chat/completions",
+        "model": "zai-glm-4.7",
         "key_env": "CEREBRAS",
     },
     {
@@ -51,7 +56,6 @@ def health():
 
 @app.get("/models")
 async def list_models():
-    """查詢 Cerebras 實際可用的 model 清單"""
     async with httpx.AsyncClient(timeout=30) as client:
         resp = await client.get(
             "https://api.cerebras.ai/v1/models",
