@@ -1121,6 +1121,90 @@ kbd { background:var(--card); border:1px solid var(--border); border-radius:4px;
   background: var(--bg);
 }
 
+
+/* ── Claude 結果貼上區 ── */
+.cm-paste-section {
+  margin-top: 20px;
+  border: 2px dashed var(--accent);
+  border-radius: 12px;
+  padding: 20px;
+  background: rgba(0,102,204,0.03);
+}
+.cm-paste-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.cm-paste-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.cm-paste-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+.cm-paste-area {
+  width: 100%;
+  min-height: 200px;
+  max-height: 400px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.6;
+  resize: vertical;
+  background: var(--card);
+  color: var(--text);
+  box-sizing: border-box;
+}
+.cm-paste-area:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,102,204,0.12);
+}
+.cm-paste-actions {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.cm-result-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+.cm-dl-btns {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.cm-dl-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .15s;
+}
+.cm-dl-html {
+  background: var(--accent);
+  color: #fff;
+}
+.cm-dl-html:hover { background: #0052cc; }
+.cm-dl-csv {
+  background: #16a34a;
+  color: #fff;
+}
+.cm-dl-csv:hover { background: #15803d; }
+
 </style>
 <script>
   // ╔══════════════════════════════════════════════════════════════════╗
@@ -1443,79 +1527,53 @@ const _pdfWorkerUrl = URL.createObjectURL(_pdfWorkerBlob);
     <div id="claudePanel" style="display:none">
       <div class="claude-mode-wrap">
 
+        <!-- 說明區 -->
         <div class="claude-mode-header">
           <div class="cm-icon">🤖</div>
           <div>
             <div class="cm-title">Claude.ai 模式</div>
-            <div class="cm-sub">工具自動組合審核 Prompt，開啟 Claude.ai 讓 Claude 完整審核報告（含波形圖）</div>
+            <div class="cm-sub">工具組合審核 Prompt → 開啟 Claude.ai → 貼上結果 → 下載美觀報告</div>
           </div>
         </div>
 
-        <div class="cm-steps">
-          <div class="cm-step">
-            <div class="cm-step-num">1</div>
-            <div class="cm-step-text"><strong>上傳 PDF</strong><br>在左側上傳測試報告 PDF</div>
+        <!-- STEP 1+2：上傳後顯示 Prompt 和送出按鈕 -->
+        <div class="cm-section">
+          <div class="cm-section-title">Step 1 — 複製 Prompt 並開啟 Claude.ai</div>
+          <div id="claudePrepareMsg" class="cm-prepare-msg">
+            <div class="cm-prepare-icon">📂</div>
+            <div>請先在左側<strong>上傳測試報告 PDF</strong>，並選擇對應的<strong>審核類型</strong></div>
           </div>
-          <div class="cm-step-arrow">→</div>
-          <div class="cm-step">
-            <div class="cm-step-num">2</div>
-            <div class="cm-step-text"><strong>選擇審核類型</strong><br>選擇對應的報告類型</div>
-          </div>
-          <div class="cm-step-arrow">→</div>
-          <div class="cm-step">
-            <div class="cm-step-num">3</div>
-            <div class="cm-step-text"><strong>按下送出</strong><br>Prompt 自動複製，Claude.ai 自動開啟</div>
-          </div>
-          <div class="cm-step-arrow">→</div>
-          <div class="cm-step">
-            <div class="cm-step-num">4</div>
-            <div class="cm-step-text"><strong>貼上 + 上傳 PDF</strong><br>在 Claude.ai 貼上（Ctrl+V），再把 PDF 拖入對話框</div>
-          </div>
-          <div class="cm-step-arrow">→</div>
-          <div class="cm-step">
-            <div class="cm-step-num">5</div>
-            <div class="cm-step-text"><strong>取得完整結果</strong><br>Claude 完整分析含波形圖的完整報告</div>
+          <div id="claudeSendArea" style="display:none">
+            <div class="cm-prompt-preview">
+              <div class="cm-prompt-label">審核 Prompt 預覽（自動複製到剪貼簿）：</div>
+              <div class="cm-prompt-box" id="claudePromptPreview"></div>
+            </div>
+            <button class="cm-send-btn" onclick="sendToClaudeAI()">
+              🚀 複製 Prompt 並開啟 Claude.ai
+            </button>
+            <div id="claudeCopiedHint" style="display:none;margin-top:12px;padding:16px 20px;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;">
+              <div style="font-size:14px;font-weight:700;color:#16a34a;margin-bottom:10px">✅ Prompt 已複製，Claude.ai 已開啟！</div>
+              <ol style="font-size:13px;color:#166534;line-height:2.2;padding-left:20px;margin:0">
+                <li>在 Claude.ai 按 <kbd style="background:#fff;border:1px solid #86efac;border-radius:4px;padding:1px 7px;font-family:monospace">Ctrl+V</kbd> 貼上 Prompt</li>
+                <li>把 <strong>PDF 報告</strong>直接拖曳到 Claude.ai 對話框上傳</li>
+                <li>送出，等待分析完成（約 30～60 秒）</li>
+                <li>Claude 回覆最後會自動附上 <strong>📄 可下載的 HTML 報告</strong>，直接點擊下載即可</li>
+              </ol>
+            </div>
           </div>
         </div>
 
+
+
+        <!-- 優點說明 -->
         <div class="cm-advantage">
           <div class="cm-adv-title">✅ 此模式的優點（相較自動審核模式）</div>
           <div class="cm-adv-list">
             <div class="cm-adv-item">📊 <strong>完整報告不截斷</strong> — 200K token context，不受免費 API 限制</div>
             <div class="cm-adv-item">🖼️ <strong>可分析波形圖/眼圖</strong> — Claude 可直接看 PDF 中的圖片</div>
             <div class="cm-adv-item">💬 <strong>可追問細節</strong> — 審核完可在 Claude.ai 繼續追問</div>
-            <div class="cm-adv-item">🆓 <strong>Claude.ai 訂閱免費使用</strong> — 不需要額外 API Key</div>
+            <div class="cm-adv-item">🆓 <strong>Claude.ai 訂閱即可使用</strong> — 不需要額外 API Key</div>
           </div>
-        </div>
-
-        <div id="claudeSendArea" style="display:none">
-          <div class="cm-prompt-preview">
-            <div class="cm-prompt-label">已組合的審核 Prompt（將自動複製到剪貼簿）：</div>
-            <div class="cm-prompt-box" id="claudePromptPreview"></div>
-          </div>
-          <button class="cm-send-btn" id="claudeSendBtn" onclick="sendToClaudeAI()">
-            🚀 複製 Prompt 並開啟 Claude.ai
-          </button>
-        </div>
-
-        <div id="claudeSuccessPanel" style="display:none">
-          <div class="cm-success">
-            <div class="cm-success-title">✅ Prompt 已複製，Claude.ai 已開啟！</div>
-            <ol class="cm-success-steps">
-              <li>在已開啟的 <strong>Claude.ai</strong> 視窗中，按 <kbd>Ctrl+V</kbd>（Mac: <kbd>⌘+V</kbd>）貼上 Prompt</li>
-              <li>把 <strong>PDF 報告檔案</strong>直接拖曳到 Claude.ai 的對話框上傳</li>
-              <li>按送出，等待 Claude 完成分析（約 30～60 秒）</li>
-            </ol>
-            <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
-              <a href="https://claude.ai" target="_blank" class="cm-open-btn">🔗 再次開啟 Claude.ai</a>
-              <button class="cm-copy-again-btn" onclick="copyPromptAgain()">📋 再次複製 Prompt</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="cm-prepare-msg" id="claudePrepareMsg">
-          <div class="cm-prepare-icon">📂</div>
-          <div>請先在左側<strong>上傳測試報告 PDF</strong>，並選擇正確的<strong>審核類型</strong>，工具就會自動組合最佳化的審核 Prompt。</div>
         </div>
 
       </div>
@@ -1937,7 +1995,29 @@ ${rule}
 ---
 `;
 
-  return { system: systemPrompt, user: userPrompt };
+  // Claude.ai 模式：在 userPrompt 後面加上 HTML 報告輸出指令
+  const htmlOutputInstruction = `
+---
+
+## 📄 輸出格式要求（重要）
+
+完成逐項審核後，請在回覆最後額外輸出一份完整的 **HTML 報告檔案**（程式碼區塊），內容包含：
+
+### HTML 報告規格
+1. **報告標題區**：檔名、測試階段、審核日期、整體判定結果（PASS/FAIL/WARN/CONTRADICTION 用顏色標示）
+2. **統計摘要**：PASS / FAIL / WARN / CONTRADICTION 各項數量
+3. **逐項審核表格**：序號、子模組、測試項目、規格限值、實測值、AI判定、說明
+   - FAIL 列：淺紅色背景
+   - WARN 列：淺黃色背景  
+   - PASS 列：淺綠色背景
+   - CONTRADICTION 列：淺紫色背景
+4. **問題項目摘要**：列出所有 FAIL / WARN 項目及建議處理方式
+5. **樣式要求**：藍色漸層標題列、清晰邊框、PASS/FAIL/WARN 顯示為彩色 Badge、適合列印
+
+請確保 HTML 檔案完整可獨立開啟，放在 \`\`\`html ... \`\`\` 程式碼區塊內。
+`;
+
+  return { system: systemPrompt, user: userPrompt, htmlInstruction: htmlOutputInstruction };
 }
 
 
@@ -2387,12 +2467,16 @@ function updateClaudePanel() {
   const previewPrompt = p.system + '\n\n---\n\n' + p.user +
     '\n[附件：' + (selectedFile?.name || 'report.pdf') + '（請在 Claude.ai 上傳此 PDF）]';
 
+  // Claude.ai 模式加入 HTML 報告輸出指令
+  const fullClaudePrompt = previewPrompt + (p.htmlInstruction || '');
   previewBox.textContent = previewPrompt.slice(0, 800) + (previewPrompt.length > 800 ? '\n...（更多內容已包含在完整 Prompt 中）' : '');
-  window._claudeFullPrompt = previewPrompt;
+  window._claudeFullPrompt = fullClaudePrompt;
 
-  prepareMsg.style.display   = 'none';
-  sendArea.style.display     = 'block';
-  successPanel.style.display = 'none';
+  prepareMsg.style.display = 'none';
+  sendArea.style.display   = 'block';
+  // copiedHint 重置
+  const hint = document.getElementById('claudeCopiedHint');
+  if (hint) hint.style.display = 'none';
 }
 
 function sendToClaudeAI() {
@@ -2427,8 +2511,15 @@ function fallbackCopyText(text) {
 }
 
 function showClaudeSuccess() {
-  document.getElementById('claudeSendArea').style.display     = 'none';
-  document.getElementById('claudeSuccessPanel').style.display = 'block';
+  // 顯示「已複製」提示，不隱藏送出按鈕（讓用戶可以重送）
+  const hint = document.getElementById('claudeCopiedHint');
+  if (hint) hint.style.display = 'block';
+  // 將頁面滾動到貼上區
+  const pasteArea = document.getElementById('claudeResultPaste');
+  if (pasteArea) {
+    setTimeout(() => pasteArea.scrollIntoView({ behavior: 'smooth', block: 'center' }), 500);
+    pasteArea.focus();
+  }
 }
 
 function copyPromptAgain() {
@@ -2444,6 +2535,295 @@ function copyPromptAgain() {
 
 // 當檔案上傳時，如果正在 Claude 模式，自動更新面板
 const _origSetFile = typeof setFile === 'function' ? setFile : null;
+
+
+// ══ Claude.ai 模式下載功能 ═══════════════════════════════════════
+
+function onClaudeResultInput(textarea) {
+  const text = textarea.value.trim();
+  const actions = document.getElementById('cmPasteActions');
+  const meta    = document.getElementById('cmResultMeta');
+  if (text.length > 50) {
+    actions.style.display = 'flex';
+    // 分析內容摘要
+    const lines  = text.split('\n').length;
+    const chars  = text.length;
+    const tables = (text.match(/^\|/gm) || []).length;
+    const fails  = (text.match(/\bFAIL\b/g) || []).length;
+    const warns  = (text.match(/\bWARN\b/g) || []).length;
+    const pass   = (text.match(/\bPASS\b/g) || []).length;
+    meta.innerHTML = `${chars.toLocaleString()} 字元 · ${lines} 行 · 表格行 ${tables} · `
+      + `<span style="color:#16a34a;font-weight:600">PASS ${pass}</span> · `
+      + `<span style="color:#dc2626;font-weight:600">FAIL ${fails}</span> · `
+      + `<span style="color:#d97706;font-weight:600">WARN ${warns}</span>`;
+  } else {
+    actions.style.display = 'none';
+  }
+}
+
+function downloadClaudeResult(format) {
+  const raw = document.getElementById('claudeResultPaste').value.trim();
+  if (!raw) { alert('請先貼入 Claude 的審核結果'); return; }
+
+  const fname = (selectedFile?.name || 'report').replace('.pdf', '');
+  const stage = document.getElementById('stage')?.value || '';
+  const now   = new Date();
+  const ts    = now.getFullYear() + '-'
+    + String(now.getMonth()+1).padStart(2,'0') + '-'
+    + String(now.getDate()).padStart(2,'0');
+  const dt    = now.toLocaleString('zh-TW');
+
+  if (format === 'csv') {
+    _downloadCSV(raw, fname, ts);
+  } else {
+    _downloadHTML(raw, fname, stage, ts, dt);
+  }
+}
+
+function _downloadCSV(raw, fname, ts) {
+  const lines = raw.split('\n');
+  let csv = '\uFEFF序號,測試項目,規格限值,實測值,報告判定,AI判定,說明\n';
+  let inTable = false;
+
+  for (const line of lines) {
+    const t = line.trim();
+    if (t.startsWith('|') && !t.match(/^\|[\s\-\|:]+\|$/)) {
+      const cells = t.split('|').map(c => c.trim()).filter(c => c !== '');
+      if (cells.length >= 2) {
+        if (/序號|#|No/.test(cells[0])) { inTable = true; continue; }
+        if (inTable || cells.some(c => /PASS|FAIL|WARN|NA/.test(c))) {
+          inTable = true;
+          csv += cells.map(c => '"' + c.replace(/"/g,'""') + '"').join(',') + '\n';
+        }
+      }
+    } else if (t.length > 0 && !t.startsWith('|')) {
+      if (inTable) inTable = false;
+    }
+  }
+
+  // 整體判定
+  const vm = raw.match(/(?:最終判定|整體判定)[：:]\s*\*{0,2}\s*(PASS|FAIL|WARN|CONTRADICTION)\s*\*{0,2}/);
+  if (vm) csv += `\n整體判定,${vm[1]}\n`;
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fname + '_審核結果_' + ts + '.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function _downloadHTML(raw, fname, stage, ts, dt) {
+  // ── 解析整體判定 ──
+  const vm = raw.match(/(?:最終判定|整體判定)[：:]\s*\*{0,2}\s*(PASS|FAIL|WARN|CONTRADICTION)\s*\*{0,2}/);
+  const overall = vm ? vm[1] : 'UNKNOWN';
+  const overallColor = { PASS:'#16a34a', FAIL:'#dc2626', WARN:'#d97706', CONTRADICTION:'#9333ea', UNKNOWN:'#6b7280' };
+  const overallBg    = { PASS:'#f0fdf4', FAIL:'#fef2f2', WARN:'#fffbeb', CONTRADICTION:'#faf5ff', UNKNOWN:'#f9fafb' };
+
+  // ── 統計 ──
+  const passCount = (raw.match(/\bPASS\b/g)||[]).length;
+  const failCount = (raw.match(/\bFAIL\b/g)||[]).length;
+  const warnCount = (raw.match(/\bWARN\b/g)||[]).length;
+  const contCount = (raw.match(/\bCONTRADICTION\b/g)||[]).length;
+
+  // ── Markdown → HTML 轉換 ──
+  function mdToHtml(text) {
+    return text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(/^#{3}\s(.+)$/gm,'<h3>$1</h3>')
+      .replace(/^#{2}\s(.+)$/gm,'<h2>$1</h2>')
+      .replace(/^#{1}\s(.+)$/gm,'<h1>$1</h1>')
+      .replace(/^---+$/gm,'<hr>')
+      .replace(/((?:^\|.+\|\n?)+)/gm, function(block) {
+        const rows = block.trim().split('\n');
+        let out = '<table>';
+        let isFirst = true;
+        rows.forEach(function(row) {
+          if (/^\|[\s\-\|:]+\|$/.test(row)) return;
+          const cells = row.replace(/^\||\|$/g,'').split('|').map(c => c.trim());
+          if (isFirst) {
+            out += '<thead><tr>' + cells.map(c => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>';
+            isFirst = false;
+          } else {
+            // 根據判定結果加色
+            const rowClass = cells.some(c => /^FAIL$/.test(c)) ? ' class="row-fail"'
+              : cells.some(c => /^CONTRADICTION$/.test(c)) ? ' class="row-contradiction"'
+              : cells.some(c => /^WARN$/.test(c)) ? ' class="row-warn"'
+              : cells.some(c => /^PASS$/.test(c)) ? ' class="row-pass"' : '';
+            out += '<tr' + rowClass + '>' + cells.map(function(c) {
+              const cls = /^PASS$/.test(c) ? ' class="verdict-pass"'
+                : /^FAIL$/.test(c) ? ' class="verdict-fail"'
+                : /^WARN$/.test(c) ? ' class="verdict-warn"'
+                : /^CONTRADICTION$/.test(c) ? ' class="verdict-cont"'
+                : /^NA$/.test(c) ? ' class="verdict-na"' : '';
+              return '<td' + cls + '>' + c + '</td>';
+            }).join('') + '</tr>';
+          }
+        });
+        if (!isFirst) out += '</tbody>';
+        return out + '</table>';
+      })
+      .replace(/\n{2,}/g,'</p><p>')
+      .replace(/\n/g,'<br>');
+  }
+
+  const bodyHtml = mdToHtml(raw);
+
+  const fullHtml = `<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${fname} 測試報告審核結果 ${ts}</title>
+<style>
+/* ══ Reset & Base ══ */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft JhengHei","Noto Sans TC","Segoe UI",sans-serif;background:#f4f6fb;color:#13172e;font-size:14px;line-height:1.7;min-height:100vh}
+
+/* ══ Header ══ */
+.report-header{background:linear-gradient(135deg,#1a3ccc 0%,#2650e8 60%,#4a6ef5 100%);padding:32px 48px;color:#fff}
+.rh-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.rh-logo{font-size:12px;font-weight:700;letter-spacing:1.5px;opacity:.8;text-transform:uppercase}
+.rh-badge{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:600;letter-spacing:.5px}
+.rh-title{font-size:22px;font-weight:700;margin-bottom:6px;letter-spacing:.3px}
+.rh-sub{font-size:13px;opacity:.8}
+
+/* ══ Summary Cards ══ */
+.summary-bar{background:#fff;border-bottom:1px solid #e0e4ef;padding:20px 48px;display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.sum-card{padding:14px 28px;border-right:1px solid #e8eaf2;text-align:center;min-width:110px}
+.sum-card:last-child{border-right:none}
+.sum-label{font-size:11px;font-weight:600;color:#7a8099;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.sum-value{font-size:26px;font-weight:800;line-height:1}
+.sum-overall .sum-value{color:${overallColor[overall]};background:${overallBg[overall]};border-radius:8px;padding:4px 16px;font-size:18px}
+.sum-pass .sum-value{color:#16a34a}
+.sum-fail .sum-value{color:#dc2626}
+.sum-warn .sum-value{color:#d97706}
+.sum-cont .sum-value{color:#9333ea}
+
+/* ══ Content ══ */
+.report-body{max-width:1100px;margin:0 auto;padding:32px 24px}
+
+h1{font-size:18px;font-weight:700;color:#1a3ccc;margin:28px 0 12px;padding-bottom:8px;border-bottom:2px solid #e0e4ef}
+h2{font-size:15px;font-weight:700;color:#2650e8;margin:22px 0 10px;padding-left:10px;border-left:3px solid #2650e8}
+h3{font-size:13px;font-weight:700;color:#4a6ef5;margin:16px 0 8px}
+p{margin-bottom:10px}
+hr{border:none;border-top:1px solid #e0e4ef;margin:20px 0}
+
+/* ══ Tables ══ */
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+thead{background:linear-gradient(135deg,#2650e8,#4a6ef5)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:#fff;font-size:12px;letter-spacing:.3px;white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid #e8eaf2;vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(38,80,232,.03)}
+.row-pass td{background:rgba(22,163,74,.03)}
+.row-fail td{background:rgba(220,38,38,.05)}
+.row-warn td{background:rgba(217,119,6,.04)}
+.row-contradiction td{background:rgba(147,51,234,.04)}
+
+/* ══ Verdict Badges ══ */
+.verdict-pass,.verdict-fail,.verdict-warn,.verdict-cont,.verdict-na{
+  display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.3px;white-space:nowrap
+}
+.verdict-pass{background:#dcfce7;color:#16a34a;border:1px solid #86efac}
+.verdict-fail{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5}
+.verdict-warn{background:#fef3c7;color:#d97706;border:1px solid #fde68a}
+.verdict-cont{background:#f3e8ff;color:#9333ea;border:1px solid #d8b4fe}
+.verdict-na{background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1}
+
+/* ══ Footer ══ */
+.report-footer{background:#1a2040;color:rgba(255,255,255,.6);text-align:center;padding:20px 48px;font-size:12px;margin-top:40px}
+.rf-main{color:rgba(255,255,255,.9);font-weight:600;margin-bottom:4px}
+
+/* ══ Print ══ */
+@media print{
+  .summary-bar{break-inside:avoid}
+  table{break-inside:auto}
+  tr{break-inside:avoid}
+  h1,h2{break-after:avoid}
+}
+
+.cm-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.cm-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cm-section-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="report-header">
+  <div class="rh-top">
+    <div class="rh-logo">IFP Test Report Auto-Review</div>
+    <div class="rh-badge">AI 審核報告 · ${ts}</div>
+  </div>
+  <div class="rh-title">📋 ${fname}</div>
+  <div class="rh-sub">${stage ? '測試階段：' + stage + '　·　' : ''}產生時間：${dt}　·　審核方式：Claude.ai</div>
+</div>
+
+<div class="summary-bar">
+  <div class="sum-card sum-overall">
+    <div class="sum-label">整體判定</div>
+    <div class="sum-value">${overall}</div>
+  </div>
+  <div class="sum-card sum-pass">
+    <div class="sum-label">✅ PASS</div>
+    <div class="sum-value">${passCount}</div>
+  </div>
+  <div class="sum-card sum-fail">
+    <div class="sum-label">❌ FAIL</div>
+    <div class="sum-value">${failCount}</div>
+  </div>
+  <div class="sum-card sum-warn">
+    <div class="sum-label">⚠️ WARN</div>
+    <div class="sum-value">${warnCount}</div>
+  </div>
+  ${contCount > 0 ? `<div class="sum-card sum-cont"><div class="sum-label">🔴 矛盾</div><div class="sum-value">${contCount}</div></div>` : ''}
+</div>
+
+<div class="report-body">
+<p>${bodyHtml}</p>
+</div>
+
+<div class="report-footer">
+  <div class="rf-main">IFP 測試報告自動審核工具 · Claude.ai 模式</div>
+  <div>審核結果為輔助參考，最終判定責任由工程師確認 · 產生時間：${dt}</div>
+</div>
+
+</body>
+</html>`;
+
+  const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fname + '_審核報告_' + ts + '.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
 </script>
 
 <!-- ════════════════════════════════════════════════════════
