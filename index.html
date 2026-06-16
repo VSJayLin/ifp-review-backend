@@ -1049,6 +1049,78 @@ header .subtitle {
   color: var(--accent);
 }
 
+
+/* ── 模式切換 ── */
+.mode-switcher {
+  display: flex;
+  background: var(--sidebar);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+.mode-sw-btn {
+  padding: 5px 13px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--muted);
+  background: transparent;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.mode-sw-btn.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(0,102,204,.3);
+}
+
+/* ── Claude.ai 模式面板 ── */
+.claude-mode-wrap { padding: 24px; max-width: 860px; margin: 0 auto; }
+.claude-mode-header { display:flex; gap:16px; align-items:flex-start; margin-bottom:28px; }
+.cm-icon { font-size:40px; flex-shrink:0; }
+.cm-title { font-size:20px; font-weight:700; color:var(--text); margin-bottom:4px; }
+.cm-sub { font-size:13px; color:var(--muted); line-height:1.6; }
+
+.cm-steps { display:flex; align-items:center; gap:6px; margin-bottom:24px; flex-wrap:wrap; }
+.cm-step { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 14px; flex:1; min-width:120px; text-align:center; }
+.cm-step-num { background:var(--accent); color:#fff; border-radius:50%; width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; margin-bottom:8px; }
+.cm-step-text { font-size:12px; line-height:1.5; }
+.cm-step-arrow { font-size:18px; color:var(--muted); flex-shrink:0; }
+
+.cm-advantage { background:linear-gradient(135deg,#f0fff4,#e6fff0); border:1px solid #86efac; border-radius:12px; padding:18px 20px; margin-bottom:24px; }
+.cm-adv-title { font-size:13px; font-weight:700; color:#16a34a; margin-bottom:12px; }
+.cm-adv-list { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.cm-adv-item { font-size:13px; line-height:1.6; }
+
+.cm-prompt-preview { margin-bottom:16px; }
+.cm-prompt-label { font-size:12px; font-weight:600; color:var(--muted); margin-bottom:8px; }
+.cm-prompt-box { background:var(--sidebar); border:1px solid var(--border); border-radius:8px; padding:14px; font-size:12px; font-family:monospace; max-height:200px; overflow-y:auto; white-space:pre-wrap; word-break:break-all; color:var(--text); line-height:1.6; }
+
+.cm-send-btn { width:100%; padding:16px; background:var(--accent); color:#fff; border:none; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; transition:background .15s; margin-bottom:12px; }
+.cm-send-btn:hover { background:#0052cc; }
+
+.cm-success { background:linear-gradient(135deg,#f0fff4,#e6fff0); border:1px solid #86efac; border-radius:12px; padding:20px 24px; }
+.cm-success-title { font-size:16px; font-weight:700; color:#16a34a; margin-bottom:14px; }
+.cm-success-steps { padding-left:20px; }
+.cm-success-steps li { font-size:13px; margin-bottom:8px; line-height:1.6; }
+kbd { background:var(--card); border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:12px; font-family:monospace; }
+.cm-open-btn { padding:10px 20px; background:var(--accent); color:#fff; border-radius:8px; text-decoration:none; font-size:13px; font-weight:600; }
+.cm-copy-again-btn { padding:10px 20px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; }
+
+.cm-prepare-msg { display:flex; gap:14px; align-items:center; background:var(--sidebar); border:1px solid var(--border); border-radius:10px; padding:18px 20px; font-size:13px; line-height:1.7; color:var(--muted); }
+.cm-prepare-icon { font-size:28px; flex-shrink:0; }
+
+
+/* ── Claude.ai 模式面板佈局 ── */
+#claudePanel {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
 </style>
 <script>
   // ╔══════════════════════════════════════════════════════════════════╗
@@ -1096,6 +1168,10 @@ const _pdfWorkerUrl = URL.createObjectURL(_pdfWorkerBlob);
   <h1>IFP TEST REPORT AUTO-REVIEW</h1>
   <span class="subtitle">互動式電子白板測試報告自動審核系統</span>
   <div class="hdr-right">
+    <div class="mode-switcher">
+      <button class="mode-sw-btn active" id="modeAutoBtn" onclick="switchMode('auto')">⚡ 自動審核模式</button>
+      <button class="mode-sw-btn" id="modeClaudeBtn" onclick="switchMode('claude')">🤖 Claude.ai 模式</button>
+    </div>
     <button class="hdr-btn" onclick="openModal('apiComparePage')">💰 API 方案比較</button>
     <button class="hdr-btn" onclick="openModal('limitPage')">⚠️ AI 審核限制</button>
     <span class="version-tag">v4.1 · IFP QC</span>
@@ -1360,7 +1436,90 @@ const _pdfWorkerUrl = URL.createObjectURL(_pdfWorkerBlob);
     <!-- results area -->
     <div id="resultsArea"></div>
 
+
   </main>
+
+<!-- Claude.ai 模式面板 -->
+    <div id="claudePanel" style="display:none">
+      <div class="claude-mode-wrap">
+
+        <div class="claude-mode-header">
+          <div class="cm-icon">🤖</div>
+          <div>
+            <div class="cm-title">Claude.ai 模式</div>
+            <div class="cm-sub">工具自動組合審核 Prompt，開啟 Claude.ai 讓 Claude 完整審核報告（含波形圖）</div>
+          </div>
+        </div>
+
+        <div class="cm-steps">
+          <div class="cm-step">
+            <div class="cm-step-num">1</div>
+            <div class="cm-step-text"><strong>上傳 PDF</strong><br>在左側上傳測試報告 PDF</div>
+          </div>
+          <div class="cm-step-arrow">→</div>
+          <div class="cm-step">
+            <div class="cm-step-num">2</div>
+            <div class="cm-step-text"><strong>選擇審核類型</strong><br>選擇對應的報告類型</div>
+          </div>
+          <div class="cm-step-arrow">→</div>
+          <div class="cm-step">
+            <div class="cm-step-num">3</div>
+            <div class="cm-step-text"><strong>按下送出</strong><br>Prompt 自動複製，Claude.ai 自動開啟</div>
+          </div>
+          <div class="cm-step-arrow">→</div>
+          <div class="cm-step">
+            <div class="cm-step-num">4</div>
+            <div class="cm-step-text"><strong>貼上 + 上傳 PDF</strong><br>在 Claude.ai 貼上（Ctrl+V），再把 PDF 拖入對話框</div>
+          </div>
+          <div class="cm-step-arrow">→</div>
+          <div class="cm-step">
+            <div class="cm-step-num">5</div>
+            <div class="cm-step-text"><strong>取得完整結果</strong><br>Claude 完整分析含波形圖的完整報告</div>
+          </div>
+        </div>
+
+        <div class="cm-advantage">
+          <div class="cm-adv-title">✅ 此模式的優點（相較自動審核模式）</div>
+          <div class="cm-adv-list">
+            <div class="cm-adv-item">📊 <strong>完整報告不截斷</strong> — 200K token context，不受免費 API 限制</div>
+            <div class="cm-adv-item">🖼️ <strong>可分析波形圖/眼圖</strong> — Claude 可直接看 PDF 中的圖片</div>
+            <div class="cm-adv-item">💬 <strong>可追問細節</strong> — 審核完可在 Claude.ai 繼續追問</div>
+            <div class="cm-adv-item">🆓 <strong>Claude.ai 訂閱免費使用</strong> — 不需要額外 API Key</div>
+          </div>
+        </div>
+
+        <div id="claudeSendArea" style="display:none">
+          <div class="cm-prompt-preview">
+            <div class="cm-prompt-label">已組合的審核 Prompt（將自動複製到剪貼簿）：</div>
+            <div class="cm-prompt-box" id="claudePromptPreview"></div>
+          </div>
+          <button class="cm-send-btn" id="claudeSendBtn" onclick="sendToClaudeAI()">
+            🚀 複製 Prompt 並開啟 Claude.ai
+          </button>
+        </div>
+
+        <div id="claudeSuccessPanel" style="display:none">
+          <div class="cm-success">
+            <div class="cm-success-title">✅ Prompt 已複製，Claude.ai 已開啟！</div>
+            <ol class="cm-success-steps">
+              <li>在已開啟的 <strong>Claude.ai</strong> 視窗中，按 <kbd>Ctrl+V</kbd>（Mac: <kbd>⌘+V</kbd>）貼上 Prompt</li>
+              <li>把 <strong>PDF 報告檔案</strong>直接拖曳到 Claude.ai 的對話框上傳</li>
+              <li>按送出，等待 Claude 完成分析（約 30～60 秒）</li>
+            </ol>
+            <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
+              <a href="https://claude.ai" target="_blank" class="cm-open-btn">🔗 再次開啟 Claude.ai</a>
+              <button class="cm-copy-again-btn" onclick="copyPromptAgain()">📋 再次複製 Prompt</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cm-prepare-msg" id="claudePrepareMsg">
+          <div class="cm-prepare-icon">📂</div>
+          <div>請先在左側<strong>上傳測試報告 PDF</strong>，並選擇正確的<strong>審核類型</strong>，工具就會自動組合最佳化的審核 Prompt。</div>
+        </div>
+
+      </div>
+    </div>
 </div>
 
 <script>
@@ -1437,6 +1596,7 @@ function setFile(file) {
     fileBase64 = btoa(chunks.join(''));
     document.getElementById('analyzeBtn').disabled = false;
     document.getElementById('analyzeBtn').innerHTML = '▶ 開始自動審核';
+    if (typeof _currentMode !== 'undefined' && _currentMode === 'claude') updateClaudePanel();
   };
   reader.onerror = () => {
     alert('PDF 讀取失敗，請重新上傳');
@@ -2180,7 +2340,111 @@ document.addEventListener('keydown', e => {
 
 // 舊版 toggle 函數保留相容性
 function toggleComparePage() { openModal('apiComparePage'); }
-function toggleLimitPage()   { openModal('limitPage'); }</script>
+function toggleLimitPage()   { openModal('limitPage'); }
+
+// ══ Claude.ai 模式 ══════════════════════════════════════════════
+let _currentMode = 'auto';  // 'auto' | 'claude'
+
+function switchMode(mode) {
+  _currentMode = mode;
+
+  // 切換按鈕狀態
+  document.getElementById('modeAutoBtn').classList.toggle('active', mode === 'auto');
+  document.getElementById('modeClaudeBtn').classList.toggle('active', mode === 'claude');
+
+  // claudePanel 現在是 main 的兄弟元素，直接顯示/隱藏
+  const mainPanel   = document.getElementById('mainPanel');
+  const claudePanel = document.getElementById('claudePanel');
+  const analyzeBtn  = document.getElementById('analyzeBtn');
+
+  if (mode === 'claude') {
+    mainPanel.style.display   = 'none';
+    claudePanel.style.display = 'block';
+    if (analyzeBtn) analyzeBtn.closest('.sidebar-section').style.display = 'none';
+    if (fileBase64) updateClaudePanel();
+  } else {
+    mainPanel.style.display   = '';
+    claudePanel.style.display = 'none';
+    if (analyzeBtn) analyzeBtn.closest('.sidebar-section').style.display = '';
+  }
+}
+
+function updateClaudePanel() {
+  const prepareMsg   = document.getElementById('claudePrepareMsg');
+  const sendArea     = document.getElementById('claudeSendArea');
+  const successPanel = document.getElementById('claudeSuccessPanel');
+  const previewBox   = document.getElementById('claudePromptPreview');
+
+  if (!fileBase64) {
+    prepareMsg.style.display   = 'flex';
+    sendArea.style.display     = 'none';
+    successPanel.style.display = 'none';
+    return;
+  }
+
+  // 組合 Prompt（只取 system + user 格式的文字說明，不含報告內容本身）
+  const p = buildPrompt();
+  const previewPrompt = p.system + '\n\n---\n\n' + p.user +
+    '\n[附件：' + (selectedFile?.name || 'report.pdf') + '（請在 Claude.ai 上傳此 PDF）]';
+
+  previewBox.textContent = previewPrompt.slice(0, 800) + (previewPrompt.length > 800 ? '\n...（更多內容已包含在完整 Prompt 中）' : '');
+  window._claudeFullPrompt = previewPrompt;
+
+  prepareMsg.style.display   = 'none';
+  sendArea.style.display     = 'block';
+  successPanel.style.display = 'none';
+}
+
+function sendToClaudeAI() {
+  const prompt = window._claudeFullPrompt;
+  if (!prompt) { alert('請先上傳 PDF 報告'); return; }
+
+  // 開啟 claude.ai（必須在點擊事件內同步執行，否則被 popup blocker 攔截）
+  const claudeWin = window.open('https://claude.ai/new', '_blank');
+  if (!claudeWin) {
+    alert('⚠️ 瀏覽器封鎖了彈出視窗\n請允許此頁面的彈出視窗，或手動開啟 claude.ai');
+  }
+
+  // 複製 Prompt 到剪貼簿
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(prompt)
+      .then(() => showClaudeSuccess())
+      .catch(() => { fallbackCopyText(prompt); showClaudeSuccess(); });
+  } else {
+    fallbackCopyText(prompt);
+    showClaudeSuccess();
+  }
+}
+
+function fallbackCopyText(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+function showClaudeSuccess() {
+  document.getElementById('claudeSendArea').style.display     = 'none';
+  document.getElementById('claudeSuccessPanel').style.display = 'block';
+}
+
+function copyPromptAgain() {
+  const prompt = window._claudeFullPrompt;
+  if (!prompt) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(prompt).then(() => alert('✅ Prompt 已再次複製'));
+  } else {
+    fallbackCopyText(prompt);
+    alert('✅ Prompt 已再次複製');
+  }
+}
+
+// 當檔案上傳時，如果正在 Claude 模式，自動更新面板
+const _origSetFile = typeof setFile === 'function' ? setFile : null;
+</script>
 
 <!-- ════════════════════════════════════════════════════════
      API 方案比較頁面
