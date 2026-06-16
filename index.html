@@ -471,6 +471,8 @@ header .subtitle {
 .badge-pass { background: var(--pass-bg); color: var(--pass); border: 1px solid rgba(13,140,74,.25); }
 .badge-fail { background: var(--fail-bg); color: var(--fail); border: 1px solid rgba(204,43,43,.25); }
 .badge-warn { background: var(--warn-bg); color: var(--warn); border: 1px solid rgba(176,96,0,.25); }
+.badge-contradiction { background: #fff0f3; color: #c00060; border: 1px solid rgba(192,0,96,.3); }
+.badge-unknown { background: var(--card); color: var(--muted); border: 1px solid var(--border); }
 .meta-row {
   display: flex; flex-wrap: wrap; gap: 16px;
   font-size: 12px; color: var(--muted);
@@ -848,6 +850,205 @@ header .subtitle {
 }
 .export-btn:hover { background: var(--card2); border-color: var(--accent); }
 
+
+/* ── API 比較頁面樣式 ── */
+.compare-wrap { max-width:1200px; margin:0 auto; padding:24px 20px 60px; }
+.compare-header { text-align:center; margin-bottom:32px; }
+.compare-title { font-size:24px; font-weight:700; color:var(--text); margin:0 0 8px; }
+.compare-subtitle { font-size:13px; color:var(--muted); margin:0; }
+
+.compare-verdict { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:32px; }
+.verdict-item { border-radius:12px; padding:20px 16px; text-align:center; border:1px solid var(--border); }
+.verdict-best { background:linear-gradient(135deg,#fff9e6,#fff3c4); border-color:#f0c040; }
+.verdict-quality { background:linear-gradient(135deg,#f0f4ff,#e6edff); border-color:#6b8cff; }
+.verdict-budget { background:linear-gradient(135deg,#f0fff4,#d4f5e2); border-color:#40c080; }
+.verdict-crown { font-size:13px; font-weight:700; margin-bottom:6px; }
+.verdict-name { font-size:16px; font-weight:700; color:var(--text); margin-bottom:6px; }
+.verdict-reason { font-size:12px; color:var(--muted); }
+
+.compare-section { margin-bottom:40px; }
+.compare-section-title { font-size:17px; font-weight:700; color:var(--text); margin:0 0 16px; padding-bottom:8px; border-bottom:2px solid var(--border); }
+.compare-note { font-size:12px; color:var(--muted); margin:0 0 12px; }
+
+/* 費用試算表 */
+.cost-calc-table table { width:100%; border-collapse:collapse; font-size:13px; }
+.cost-calc-table th { background:var(--card); padding:10px 12px; text-align:left; border-bottom:2px solid var(--border); color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
+.cost-calc-table td { padding:10px 12px; border-bottom:1px solid var(--border); }
+.row-highlight { background:rgba(0,120,255,0.04); }
+.row-warning { background:rgba(255,80,80,0.06); color:var(--muted); }
+
+/* 詳細規格表 */
+.detail-table-wrap { overflow-x:auto; }
+.detail-table { width:100%; border-collapse:collapse; font-size:12px; }
+.detail-table th { background:var(--card); padding:8px 10px; text-align:left; border-bottom:2px solid var(--border); color:var(--muted); font-size:11px; }
+.detail-table td { padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:middle; }
+.provider-header td { background:var(--sidebar); font-weight:700; font-size:13px; color:var(--text); padding:10px 10px; }
+
+/* 優缺點卡片 */
+.pros-cons-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+.pc-card { border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.pc-header { padding:12px 16px; font-weight:700; font-size:14px; color:#fff; }
+.pc-anthropic { background:#8b5cf6; }
+.pc-gemini { background:#1a73e8; }
+.pc-openai { background:#10a37f; }
+.pc-groq { background:#f55036; }
+.pc-body { padding:16px; }
+.pc-price { font-size:12px; color:var(--muted); margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+.pc-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+.pros-label { color:#16a34a; }
+.cons-label { color:#dc2626; }
+.pc-pros { margin-bottom:12px; }
+.pc-pros ul, .pc-cons ul { margin:0; padding-left:16px; }
+.pc-pros li, .pc-cons li { font-size:12px; margin-bottom:4px; line-height:1.5; }
+.pc-verdict { font-size:12px; font-weight:600; padding:8px 10px; background:var(--sidebar); border-radius:6px; margin-top:8px; }
+
+/* 免費方案 */
+.free-tier-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
+.ft-card { border-radius:10px; padding:16px; border:1px solid var(--border); }
+.ft-good { background:rgba(22,163,74,0.06); border-color:#86efac; }
+.ft-medium { background:rgba(234,179,8,0.06); border-color:#fde047; }
+.ft-bad { background:rgba(220,38,38,0.05); border-color:#fca5a5; }
+.ft-provider { font-weight:700; font-size:13px; margin-bottom:6px; }
+.ft-status { font-size:12px; font-weight:600; margin-bottom:6px; }
+.ft-detail { font-size:11px; color:var(--muted); line-height:1.6; }
+.free-tier-conclusion { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px 16px; font-size:13px; line-height:1.7; }
+
+/* 建議步驟 */
+.recommend-steps { display:flex; flex-direction:column; gap:12px; }
+.rec-step { display:flex; gap:16px; align-items:flex-start; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; }
+.rec-num { background:var(--accent); color:#fff; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+.rec-content { font-size:13px; line-height:1.7; }
+
+@media (max-width:768px) {
+  .compare-verdict { grid-template-columns:1fr; }
+  .pros-cons-grid { grid-template-columns:1fr; }
+  .free-tier-grid { grid-template-columns:1fr 1fr; }
+}
+
+
+/* ── AI 限制說明頁面樣式 ── */
+.limit-positioning { display:flex; gap:20px; align-items:flex-start; background:linear-gradient(135deg,#f0f4ff,#e8edff); border:1px solid #c0d0ff; border-radius:14px; padding:24px; margin-bottom:32px; }
+.pos-icon { font-size:36px; flex-shrink:0; }
+.pos-title { font-size:17px; font-weight:700; color:#2040c0; margin-bottom:8px; }
+.pos-desc { font-size:13px; line-height:1.8; color:var(--text); }
+.pos-highlight { background:#2040c0; color:#fff; padding:1px 6px; border-radius:4px; font-weight:700; }
+
+.limit-overview-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.lim-card { border-radius:10px; padding:16px; text-align:center; border:1px solid var(--border); }
+.lim-critical { background:rgba(220,38,38,0.05); border-color:#fca5a5; }
+.lim-major { background:rgba(234,88,12,0.05); border-color:#fdba74; }
+.lim-minor { background:rgba(234,179,8,0.05); border-color:#fde047; }
+.lim-icon { font-size:28px; margin-bottom:8px; }
+.lim-title { font-size:13px; font-weight:600; margin-bottom:6px; }
+.lim-level { font-size:11px; color:var(--muted); }
+
+.limit-detail-card { border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:16px; }
+.ldc-header { display:flex; align-items:center; gap:12px; padding:14px 16px; background:var(--card); border-bottom:1px solid var(--border); flex-wrap:wrap; }
+.ldc-num { background:var(--accent); color:#fff; border-radius:6px; padding:2px 8px; font-size:11px; font-weight:700; flex-shrink:0; }
+.ldc-title { font-size:14px; font-weight:700; flex:1; }
+.ldc-badge { flex-shrink:0; font-size:11px; padding:2px 8px; border-radius:4px; font-weight:600; }
+.ldc-body { padding:16px; }
+.ldc-section { margin-bottom:14px; }
+.ldc-section:last-child { margin-bottom:0; }
+.ldc-label { font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; }
+.ldc-section p { font-size:13px; line-height:1.8; margin:0; }
+
+.impact-table table { width:100%; border-collapse:collapse; font-size:12px; margin-top:8px; }
+.impact-table th { background:var(--sidebar); padding:6px 10px; text-align:left; border-bottom:1px solid var(--border); }
+.impact-table td { padding:6px 10px; border-bottom:1px solid var(--border); }
+.acc-high { color:#16a34a; font-weight:600; }
+.acc-mid { color:#d97706; font-weight:600; }
+.acc-low { color:#dc2626; font-weight:600; }
+
+.limit-list { margin:0; padding-left:18px; }
+.limit-list li { font-size:13px; margin-bottom:6px; line-height:1.6; }
+
+.usage-flow { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.uf-step { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px; flex:1; min-width:140px; }
+.uf-num { background:var(--accent); color:#fff; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; margin-bottom:8px; }
+.uf-content { font-size:12px; line-height:1.6; }
+.uf-arrow { font-size:20px; color:var(--muted); flex-shrink:0; }
+.usage-warning { background:rgba(234,179,8,0.08); border:1px solid #fde047; border-radius:10px; padding:14px 16px; font-size:13px; line-height:1.7; }
+
+@media (max-width:768px) {
+  .limit-overview-grid { grid-template-columns:repeat(2,1fr); }
+  .usage-flow { flex-direction:column; }
+  .uf-arrow { transform:rotate(90deg); }
+}
+
+
+/* ── Modal Overlay ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px 16px;
+  overflow-y: auto;
+  backdrop-filter: blur(2px);
+}
+.modal-box {
+  position: relative;
+  background: var(--bg);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 1080px;
+  min-height: 200px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+  animation: modalIn .2s ease;
+  margin: auto;
+}
+@keyframes modalIn {
+  from { opacity:0; transform:translateY(-16px) scale(.97); }
+  to   { opacity:1; transform:translateY(0)     scale(1);   }
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background .15s;
+}
+.modal-close:hover { background: var(--border); }
+/* compare-wrap 在 modal 裡不需要外邊距 */
+.modal-box .compare-wrap { max-width: 100%; }
+
+/* ── Header 右側按鈕 ── */
+.hdr-btn {
+  padding: 6px 14px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.hdr-btn:hover {
+  background: var(--sidebar);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 </style>
 <script>
   // ╔══════════════════════════════════════════════════════════════════╗
@@ -895,7 +1096,9 @@ const _pdfWorkerUrl = URL.createObjectURL(_pdfWorkerBlob);
   <h1>IFP TEST REPORT AUTO-REVIEW</h1>
   <span class="subtitle">互動式電子白板測試報告自動審核系統</span>
   <div class="hdr-right">
-    <span class="version-tag">v4.0 · IFP QC</span>
+    <button class="hdr-btn" onclick="openModal('apiComparePage')">💰 API 方案比較</button>
+    <button class="hdr-btn" onclick="openModal('limitPage')">⚠️ AI 審核限制</button>
+    <span class="version-tag">v4.1 · IFP QC</span>
   </div>
 </header>
 
@@ -1073,6 +1276,8 @@ const _pdfWorkerUrl = URL.createObjectURL(_pdfWorkerBlob);
         <div class="toggle-switch on" id="detailToggle" onclick="toggleDetail()"></div>
       </div>
     </div>
+
+
 
     <div class="sidebar-section">
       <button class="analyze-btn" id="analyzeBtn" onclick="startAnalysis()" disabled>
@@ -1629,8 +1834,15 @@ async function startAnalysis() {
       }
     } catch(e) { throw new Error('PDF 文字抽取失敗：' + e.message); }
 
-    if (!pdfText || pdfText.trim().length < 50)
-      throw new Error('無法讀取 PDF 文字內容。請確認是數位原生 PDF（非掃描件）。');
+    if (!pdfText || pdfText.trim().length < 50) {
+      throw new Error(
+        'PDF 文字抽取失敗：無法讀取任何文字內容。\n\n' +
+        '可能原因：\n' +
+        '1. 此 PDF 為掃描件（圖片型），工具目前只支援數位原生 PDF\n' +
+        '2. PDF 有加密保護\n' +
+        '3. 請改用 Chrome 瀏覽器開啟工具後重試'
+      );
+    }
 
     addLog(`PDF 解析完成（${pdfText.length} 字元）`, true);
     setStepStatus('pdf', 'done');
@@ -1643,6 +1855,7 @@ async function startAnalysis() {
       throw new Error('尚未設定後端 URL。請在 HTML 開頭的 BACKEND_URL 填入你的 Render 網址。');
 
     addLog(`連接後端：${BACKEND_URL}`, true);
+    addLog('若超過 30 秒無回應，可能是伺服器冷啟動，請耐心等待...', false);
     setStepStatus('model', 'done');
     setStep('AI 審核報告中...');
     setStepStatus('ai', 'active');
@@ -1702,18 +1915,32 @@ async function startAnalysis() {
 
     const extracted = extractKeyLines(pdfText);
     addLog('智慧萃取完成（' + extracted.length + ' 字元）', true);
-    // Gemini 2.0 Flash 支援 1M token context，不需要截斷
-    const contentToSend = extracted;
+    // Cerebras 免費版 context 8K，Groq 免費版 TPM 12K
+    // 萃取後超標行已優先排前，9000 字元可涵蓋所有關鍵數據
+    const contentToSend = extracted.length > 9000
+      ? extracted.slice(0, 9000) + '\n\n[數據過多，已截取前 9000 字元]'
+      : extracted;
 
     let finalText = null;
     let lastError  = '';
 
     try {
-      const resp = await fetch(`${BACKEND_URL}/review`, {
+      const controller = new AbortController();
+      const fetchTimeout = setTimeout(() => controller.abort(), 150000); // 150 秒 timeout
+      let resp;
+      try {
+        resp = await fetch(`${BACKEND_URL}/review`, {
+          signal: controller.signal,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: prompt.system, user: prompt.user + contentToSend })
-      });
+          body: JSON.stringify({ system: prompt.system, user: prompt.user + contentToSend })
+        });
+      } catch(fetchErr) {
+        clearTimeout(fetchTimeout);
+        if (fetchErr.name === 'AbortError') throw new Error('請求逾時（超過 150 秒），請重試。');
+        throw fetchErr;
+      }
+      clearTimeout(fetchTimeout);
 
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({}));
@@ -1749,6 +1976,7 @@ async function startAnalysis() {
       throw new Error('AI 回傳空白結果，請重試');
     }
 
+    window._lastRawText = text;  // 儲存供 exportCSV 使用
     renderMarkdown(text);
     setStepStatus('render', 'done');
     setStep('✅ 審核完成');
@@ -1783,9 +2011,14 @@ function renderMarkdown(text) {
   const area = document.getElementById('resultsArea');
 
   // 解析整體結論
-  const overallMatch = text.match(/【整體結論】\s*(PASS|FAIL|WARN|CONTRADICTION)/);
+  // 匹配多種可能的格式：**最終判定：PASS** / 最終判定：PASS / 整體判定：PASS
+  const overallMatch = text.match(/(?:最終判定|整體判定|整體結論)[：:]\s*\*{0,2}\s*(PASS|FAIL|WARN|CONTRADICTION)\s*\*{0,2}/);
   const overall = overallMatch ? overallMatch[1] : 'UNKNOWN';
-  const badgeClass = overall === 'PASS' ? 'badge-pass' : overall === 'FAIL' ? 'badge-fail' : 'badge-warn';
+  const badgeClass = overall === 'PASS' ? 'badge-pass'
+    : overall === 'FAIL' ? 'badge-fail'
+    : overall === 'CONTRADICTION' ? 'badge-contradiction'
+    : overall === 'WARN' ? 'badge-warn'
+    : 'badge-unknown';
 
   // 解析統計
   const statsMatch = text.match(/共\s*(\d+)\s*項.*?PASS\s*(\d+).*?FAIL\s*(\d+).*?WARN\s*(\d+).*?NA\s*(\d+)/);
@@ -1847,6 +2080,50 @@ function copyResult() {
 
 
 function exportCSV() {
+  const rawText = window._lastRawText;
+  if (!rawText) { alert('尚無審核結果可匯出'); return; }
+
+  // 從 markdown 表格解析數據行
+  const lines = rawText.split('\n');
+  let csv = '\uFEFF序號,測試項目,規格限值,實測值,報告判定,AI判定,說明\n';
+  let inTable = false;
+
+  for (const line of lines) {
+    const t = line.trim();
+    // 偵測表格行（含 | 且不是 header 分隔線）
+    if (t.startsWith('|') && !t.match(/^\|[-:\s|]+\|$/)) {
+      const cells = t.split('|').map(c => c.trim()).filter(c => c !== '');
+      if (cells.length >= 2) {
+        // 跳過 header 行（含中文列名）
+        if (cells[0] === '序號' || cells[0] === '#') { inTable = true; continue; }
+        if (inTable || cells.some(c => /PASS|FAIL|WARN|NA/.test(c))) {
+          inTable = true;
+          // 欄位中的逗號換成全形
+          const row = cells.map(c => '"' + c.replace(/"/g, '""') + '"').join(',');
+          csv += row + '\n';
+        }
+      }
+    } else if (inTable && !t.startsWith('|') && t.length > 0) {
+      // 表格結束後繼續抓文字摘要
+    }
+  }
+
+  // 加入整體判定摘要
+  const overallMatch = rawText.match(/(?:最終判定|整體判定)[：:]\s*\*{0,2}\s*(PASS|FAIL|WARN|CONTRADICTION)\s*\*{0,2}/);
+  if (overallMatch) csv += '\n整體判定,' + overallMatch[1] + '\n';
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const fname = (selectedFile?.name || 'report').replace('.pdf','');
+  a.download = fname + '_審核結果.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// 舊版 exportCSV 移除，以下為佔位
+function _oldExportCSV_unused() {
   const r = window._lastResult;
   if (!r) return;
   let csv = '\uFEFF報告類型,測試模組,序號,測試項目（中文）,測試項目（英文）,標準依據,規格要求,實測值,降額使用率,裕量,判定,說明\n';
@@ -1870,6 +2147,893 @@ function exportCSV() {
 
 
 
-</script>
+
+
+
+
+
+
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function closeModalOnBg(event, id) {
+  if (event.target === event.currentTarget) closeModal(id);
+}
+
+// ESC 鍵關閉 modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    ['apiComparePage','limitPage'].forEach(id => closeModal(id));
+  }
+});
+
+// 舊版 toggle 函數保留相容性
+function toggleComparePage() { openModal('apiComparePage'); }
+function toggleLimitPage()   { openModal('limitPage'); }</script>
+
+<!-- ════════════════════════════════════════════════════════
+     API 方案比較頁面
+═════════════════════════════════════════════════════════ -->
+<div id="apiComparePage" class="modal-overlay" style="display:none" onclick="closeModalOnBg(event,'apiComparePage')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('apiComparePage')">✕</button>
+  <div class="compare-wrap">
+
+    <div class="compare-header">
+      <h1 class="compare-title">付費 API 方案完整比較</h1>
+      <p class="compare-subtitle">2026 年 6 月最新資料 · 專為 IFP 測試報告審核工具選型</p>
+    </div>
+
+    <!-- 快速結論 -->
+    <div class="compare-verdict">
+      <div class="verdict-item verdict-best">
+        <div class="verdict-crown">👑 最佳CP值</div>
+        <div class="verdict-name">Groq（付費 Dev Tier）</div>
+        <div class="verdict-reason">$0.59/M tokens · 500+ TPS 最快 · 6人每月 &lt;$3</div>
+      </div>
+      <div class="verdict-item verdict-quality">
+        <div class="verdict-crown">🏆 最高品質</div>
+        <div class="verdict-name">Claude Sonnet 4.6</div>
+        <div class="verdict-reason">繁體中文最強 · 專業報告理解最準確 · 6人每月約$15</div>
+      </div>
+      <div class="verdict-item verdict-budget">
+        <div class="verdict-crown">💰 最省錢</div>
+        <div class="verdict-name">Gemini 3 Flash（付費）</div>
+        <div class="verdict-reason">$0.50/M · 1M context · 6人每月約$2</div>
+      </div>
+    </div>
+
+    <!-- 每次審核費用試算 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">📊 實際費用試算（每次審核一份報告）</h2>
+      <p class="compare-note">假設：每次審核輸入 10,000 tokens（約 30 頁 PDF）+ 輸出 2,000 tokens</p>
+      <div class="cost-calc-table">
+        <table>
+          <thead>
+            <tr><th>API 方案</th><th>輸入費用</th><th>輸出費用</th><th>每次總費用</th><th>每月60次費用</th><th>每月180次費用</th></tr>
+          </thead>
+          <tbody>
+            <tr class="row-highlight"><td>🏆 Claude Haiku 4.5</td><td>$0.01</td><td>$0.01</td><td>$0.02</td><td>$1.20</td><td>$3.60</td></tr>
+            <tr class="row-highlight"><td>👑 Groq Llama 3.3 70B（付費）</td><td>$0.006</td><td>$0.0016</td><td>$0.0076</td><td>$0.46</td><td>$1.37</td></tr>
+            <tr><td>Claude Sonnet 4.6</td><td>$0.03</td><td>$0.03</td><td>$0.06</td><td>$3.60</td><td>$10.80</td></tr>
+            <tr class="row-highlight"><td>💰 Gemini 3 Flash（付費）</td><td>$0.005</td><td>$0.006</td><td>$0.011</td><td>$0.66</td><td>$1.98</td></tr>
+            <tr><td>Gemini 2.5 Flash（付費）</td><td>$0.003</td><td>$0.005</td><td>$0.008</td><td>$0.48</td><td>$1.44</td></tr>
+            <tr><td>GPT-4o（OpenAI）</td><td>$0.025</td><td>$0.02</td><td>$0.045</td><td>$2.70</td><td>$8.10</td></tr>
+            <tr><td>GPT-4o mini（OpenAI）</td><td>$0.0015</td><td>$0.0012</td><td>$0.0027</td><td>$0.16</td><td>$0.49</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 詳細比較表 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">🔍 各 API 方案詳細規格比較</h2>
+      <div class="detail-table-wrap">
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th style="width:120px">方案</th>
+              <th>定價（/1M tokens）</th>
+              <th>Context Window</th>
+              <th>免費方案</th>
+              <th>速度</th>
+              <th>繁中品質</th>
+              <th>技術報告<br>理解能力</th>
+              <th>需信用卡</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Anthropic -->
+            <tr class="provider-header"><td colspan="8">🤖 Anthropic Claude</td></tr>
+            <tr>
+              <td><strong>Haiku 4.5</strong></td>
+              <td>$1 input / $5 output</td>
+              <td>200K tokens</td>
+              <td>❌ 無（新帳號 $5 試用額度）</td>
+              <td>⚡⚡⚡⚡ 極快</td>
+              <td>⭐⭐⭐⭐⭐ 最強</td>
+              <td>⭐⭐⭐⭐ 優秀</td>
+              <td>✅ 需要</td>
+            </tr>
+            <tr>
+              <td><strong>Sonnet 4.6</strong></td>
+              <td>$3 input / $15 output</td>
+              <td>1M tokens</td>
+              <td>❌ 無</td>
+              <td>⚡⚡⚡ 快</td>
+              <td>⭐⭐⭐⭐⭐ 最強</td>
+              <td>⭐⭐⭐⭐⭐ 最強</td>
+              <td>✅ 需要</td>
+            </tr>
+            <tr>
+              <td><strong>Opus 4.8</strong></td>
+              <td>$5 input / $25 output</td>
+              <td>1M tokens</td>
+              <td>❌ 無</td>
+              <td>⚡⚡ 中等</td>
+              <td>⭐⭐⭐⭐⭐ 最強</td>
+              <td>⭐⭐⭐⭐⭐ 最強</td>
+              <td>✅ 需要</td>
+            </tr>
+            <!-- Google Gemini -->
+            <tr class="provider-header"><td colspan="8">🔷 Google Gemini</td></tr>
+            <tr class="row-warning">
+              <td><strong>2.0 Flash</strong></td>
+              <td>$0.10 / $0.40</td>
+              <td>1M tokens</td>
+              <td>⚠️ 已於 2026/6/1 關閉</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><strong>2.5 Flash</strong></td>
+              <td>$0.30 / $2.50</td>
+              <td>1M tokens</td>
+              <td>✅ 有（5 RPM / 20 RPD）</td>
+              <td>⚡⚡⚡⚡ 極快</td>
+              <td>⭐⭐⭐⭐ 良好</td>
+              <td>⭐⭐⭐⭐ 優秀</td>
+              <td>✅ 需要（付費）</td>
+            </tr>
+            <tr>
+              <td><strong>3 Flash</strong></td>
+              <td>$0.50 / $3.00</td>
+              <td>1M tokens</td>
+              <td>✅ 有（5 RPM）</td>
+              <td>⚡⚡⚡⚡ 極快</td>
+              <td>⭐⭐⭐⭐ 良好</td>
+              <td>⭐⭐⭐⭐ 優秀</td>
+              <td>✅ 需要（付費）</td>
+            </tr>
+            <tr>
+              <td><strong>3.5 Flash</strong></td>
+              <td>$1.50 / $9.00</td>
+              <td>1M tokens</td>
+              <td>✅ 有（限制中）</td>
+              <td>⚡⚡⚡⚡ 極快</td>
+              <td>⭐⭐⭐⭐ 良好</td>
+              <td>⭐⭐⭐⭐⭐ 最強</td>
+              <td>✅ 需要（付費）</td>
+            </tr>
+            <tr>
+              <td><strong>3.1 Pro</strong></td>
+              <td>$2.00 / $12.00</td>
+              <td>2M tokens</td>
+              <td>❌ 付費限定</td>
+              <td>⚡⚡⚡ 快</td>
+              <td>⭐⭐⭐⭐⭐ 最強</td>
+              <td>⭐⭐⭐⭐⭐ 最強</td>
+              <td>✅ 需要</td>
+            </tr>
+            <!-- OpenAI -->
+            <tr class="provider-header"><td colspan="8">🟢 OpenAI</td></tr>
+            <tr>
+              <td><strong>GPT-4o mini</strong></td>
+              <td>$0.15 / $0.60</td>
+              <td>128K tokens</td>
+              <td>❌ 無（$5 試用額度）</td>
+              <td>⚡⚡⚡⚡ 極快</td>
+              <td>⭐⭐⭐ 普通</td>
+              <td>⭐⭐⭐ 普通</td>
+              <td>✅ 需要</td>
+            </tr>
+            <tr>
+              <td><strong>GPT-4o</strong></td>
+              <td>$2.50 / $10.00</td>
+              <td>128K tokens</td>
+              <td>❌ 無</td>
+              <td>⚡⚡⚡ 快</td>
+              <td>⭐⭐⭐⭐ 良好</td>
+              <td>⭐⭐⭐⭐ 優秀</td>
+              <td>✅ 需要</td>
+            </tr>
+            <tr>
+              <td><strong>GPT-4.1</strong></td>
+              <td>$2.00 / $8.00</td>
+              <td>1M tokens</td>
+              <td>❌ 無</td>
+              <td>⚡⚡⚡ 快</td>
+              <td>⭐⭐⭐⭐ 良好</td>
+              <td>⭐⭐⭐⭐⭐ 最強</td>
+              <td>✅ 需要</td>
+            </tr>
+            <!-- Groq -->
+            <tr class="provider-header"><td colspan="8">⚡ Groq（開源模型，速度最快）</td></tr>
+            <tr>
+              <td><strong>免費方案</strong></td>
+              <td>免費</td>
+              <td>128K tokens</td>
+              <td>✅ 6,000 TPM / 1,000 RPD</td>
+              <td>⚡⚡⚡⚡⚡ 最快</td>
+              <td>⭐⭐ 差</td>
+              <td>⭐⭐ 差</td>
+              <td>❌ 不需要</td>
+            </tr>
+            <tr class="row-highlight">
+              <td><strong>Dev Tier（付費）</strong></td>
+              <td>$0.59 / $0.79<br><small>（Llama 3.3 70B）</small></td>
+              <td>128K tokens</td>
+              <td>—</td>
+              <td>⚡⚡⚡⚡⚡ 最快（500+ TPS）</td>
+              <td>⭐⭐⭐ 普通</td>
+              <td>⭐⭐⭐ 普通</td>
+              <td>✅ 需要</td>
+            </tr>
+            <!-- Cerebras -->
+            <tr class="provider-header"><td colspan="8">🧠 Cerebras（開源模型）</td></tr>
+            <tr>
+              <td><strong>免費方案</strong></td>
+              <td>免費（限定模型）</td>
+              <td>8K tokens</td>
+              <td>✅ 有（嚴格 Rate Limit）</td>
+              <td>⚡⚡⚡⚡ 極快</td>
+              <td>⭐⭐ 差</td>
+              <td>⭐⭐ 差</td>
+              <td>❌ 不需要</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 各方案優缺點詳析 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">📋 各方案優缺點詳析</h2>
+      <div class="pros-cons-grid">
+
+        <div class="pc-card">
+          <div class="pc-header pc-anthropic">🤖 Anthropic Claude Haiku 4.5</div>
+          <div class="pc-body">
+            <div class="pc-price">$1 input / $5 output per 1M tokens · Context 200K</div>
+            <div class="pc-pros">
+              <div class="pc-label pros-label">✅ 優點</div>
+              <ul>
+                <li>繁體中文理解能力業界最強，專業術語（如 EMC、VBO、THD+N）理解精準</li>
+                <li>遵循指令能力最強，system prompt 規則幾乎100%執行</li>
+                <li>輸出格式穩定，表格、判定結果格式一致性高</li>
+                <li>新帳號有 $5 免費試用額度（約可審核 250 份報告）</li>
+                <li>Batch API 50% off，非即時處理更便宜</li>
+              </ul>
+            </div>
+            <div class="pc-cons">
+              <div class="pc-label cons-label">❌ 缺點</div>
+              <ul>
+                <li>無永久免費方案，需要信用卡</li>
+                <li>Context 200K（相對 Gemini 的 1M 較小，但足夠大多數報告）</li>
+                <li>比 Groq 速度慢</li>
+              </ul>
+            </div>
+            <div class="pc-verdict">🏆 最適合：追求審核準確度、繁體中文輸出品質者</div>
+          </div>
+        </div>
+
+        <div class="pc-card">
+          <div class="pc-header pc-anthropic">🤖 Anthropic Claude Sonnet 4.6</div>
+          <div class="pc-body">
+            <div class="pc-price">$3 input / $15 output per 1M tokens · Context 1M</div>
+            <div class="pc-pros">
+              <div class="pc-label pros-label">✅ 優點</div>
+              <ul>
+                <li>目前市場上最強的技術文件理解與審核能力</li>
+                <li>繁體中文輸出品質頂尖，格式嚴格遵守</li>
+                <li>1M token context，完整超大型報告不截斷</li>
+                <li>矛盾偵測（CONTRADICTION）能力最強</li>
+                <li>能理解波形圖旁文字描述並做出合理判定</li>
+              </ul>
+            </div>
+            <div class="pc-cons">
+              <div class="pc-label cons-label">❌ 缺點</div>
+              <ul>
+                <li>價格為 Haiku 的 3 倍，6人每月約 $10～$15</li>
+                <li>無免費方案，需信用卡</li>
+              </ul>
+            </div>
+            <div class="pc-verdict">🏆 最適合：正式生產環境、需要最高準確度者</div>
+          </div>
+        </div>
+
+        <div class="pc-card">
+          <div class="pc-header pc-gemini">🔷 Google Gemini 2.5 Flash（付費）</div>
+          <div class="pc-body">
+            <div class="pc-price">$0.30 input / $2.50 output per 1M tokens · Context 1M</div>
+            <div class="pc-pros">
+              <div class="pc-label pros-label">✅ 優點</div>
+              <ul>
+                <li>1M token context window，完整審核超大型報告不截斷</li>
+                <li>有免費方案（5 RPM / 20 RPD），可先測試品質</li>
+                <li>價格低，6人每月估計不到 $2</li>
+                <li>速度快，響應時間短</li>
+                <li>Google 帳號即可申請，無需另外申請服務</li>
+              </ul>
+            </div>
+            <div class="pc-cons">
+              <div class="pc-label cons-label">❌ 缺點</div>
+              <ul>
+                <li>免費版每天只有 20 次（6人用很快用完）</li>
+                <li>繁體中文技術術語理解不如 Claude</li>
+                <li>遵循複雜 system prompt 指令能力較弱</li>
+                <li>API Key 格式已改為 AQ 開頭，設定較麻煩</li>
+                <li>Gemini 2.0 Flash 已於 2026/6/1 關閉，需遷移至新版</li>
+              </ul>
+            </div>
+            <div class="pc-verdict">💰 最適合：預算極少、可接受較低準確度者</div>
+          </div>
+        </div>
+
+        <div class="pc-card">
+          <div class="pc-header pc-gemini">🔷 Google Gemini 3 Flash / 3.5 Flash（付費）</div>
+          <div class="pc-body">
+            <div class="pc-price">3 Flash: $0.50/$3.00 · 3.5 Flash: $1.50/$9.00 · Context 1M</div>
+            <div class="pc-pros">
+              <div class="pc-label pros-label">✅ 優點</div>
+              <ul>
+                <li>最新世代，品質顯著優於 2.x 系列</li>
+                <li>3.5 Flash 在程式碼和 Agentic 任務超越 3.1 Pro</li>
+                <li>1M token context，大型報告完整處理</li>
+                <li>有免費方案（限制中）可先測試</li>
+              </ul>
+            </div>
+            <div class="pc-cons">
+              <div class="pc-label cons-label">❌ 缺點</div>
+              <ul>
+                <li>3.5 Flash 定價較高（$1.50/$9.00），接近 Claude Haiku</li>
+                <li>繁體中文專業術語理解仍不如 Claude</li>
+                <li>需信用卡開通付費</li>
+              </ul>
+            </div>
+            <div class="pc-verdict">📌 最適合：已有 Google 帳號、想升級品質又控制成本者</div>
+          </div>
+        </div>
+
+        <div class="pc-card">
+          <div class="pc-header pc-openai">🟢 OpenAI GPT-4o mini</div>
+          <div class="pc-body">
+            <div class="pc-price">$0.15 input / $0.60 output per 1M tokens · Context 128K</div>
+            <div class="pc-pros">
+              <div class="pc-label pros-label">✅ 優點</div>
+              <ul>
+                <li>價格極低，是 GPT-4o 的 1/16</li>
+                <li>速度快，延遲低</li>
+                <li>新帳號有 $5 試用額度</li>
+                <li>OpenAI API 生態完整，文件最多</li>
+              </ul>
+            </div>
+            <div class="pc-cons">
+              <div class="pc-label cons-label">❌ 缺點</div>
+              <ul>
+                <li>繁體中文專業技術理解能力弱，容易輸出簡體中文</li>
+                <li>Context 128K 較小，大型報告可能截斷</li>
+                <li>遵循複雜 system prompt 規則能力一般</li>
+                <li>技術術語（VBO、QR 格式碼、THD+N）理解不如 Claude</li>
+              </ul>
+            </div>
+            <div class="pc-verdict">⚠️ 不建議：繁體中文品質不足，容易輸出不準確結果</div>
+          </div>
+        </div>
+
+        <div class="pc-card">
+          <div class="pc-header pc-groq">⚡ Groq Dev Tier（付費）</div>
+          <div class="pc-body">
+            <div class="pc-price">Llama 3.3 70B: $0.59/$0.79 per 1M tokens · Context 128K</div>
+            <div class="pc-pros">
+              <div class="pc-label pros-label">✅ 優點</div>
+              <ul>
+                <li>業界最快速度：500+ TPS，響應時間 &lt;1 秒</li>
+                <li>付費後 TPM 大幅提升（6K→100K+），不再截斷</li>
+                <li>每月費用低，6人每月估計 $1～$3</li>
+                <li>Llama 3.3 70B 是開源模型中品質最強之一</li>
+                <li>不需要月費，純 pay-as-you-go</li>
+              </ul>
+            </div>
+            <div class="pc-cons">
+              <div class="pc-label cons-label">❌ 缺點</div>
+              <ul>
+                <li>Context 128K（相對 Gemini/Claude 的 1M 較小）</li>
+                <li>繁體中文專業理解不如 Claude</li>
+                <li>只跑開源模型，沒有 GPT/Claude/Gemini</li>
+                <li>遵循 system prompt 指令能力較 Claude 弱</li>
+              </ul>
+            </div>
+            <div class="pc-verdict">👑 最適合：最低預算、接受品質次於 Claude 者</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 免費方案限制一覽 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">🆓 免費方案現況（2026 年 6 月）</h2>
+      <div class="free-tier-grid">
+        <div class="ft-card ft-bad">
+          <div class="ft-provider">Anthropic Claude</div>
+          <div class="ft-status">❌ 無永久免費方案</div>
+          <div class="ft-detail">新帳號有 $5 試用額度（≈250 次審核）<br>需信用卡才能繼續使用</div>
+        </div>
+        <div class="ft-card ft-bad">
+          <div class="ft-provider">Google Gemini 2.5 Flash</div>
+          <div class="ft-status">⚠️ 免費但極度受限</div>
+          <div class="ft-detail">5 RPM / <strong>20 RPD</strong><br>6人每人3次/天，完全不夠用</div>
+        </div>
+        <div class="ft-card ft-bad">
+          <div class="ft-provider">Google Gemini 2.0 Flash</div>
+          <div class="ft-status">🚫 已於 2026/6/1 永久關閉</div>
+          <div class="ft-detail">無法再使用，需遷移至 Gemini 3.x</div>
+        </div>
+        <div class="ft-card ft-medium">
+          <div class="ft-provider">Groq 免費方案</div>
+          <div class="ft-status">⚠️ 免費但 Token 太少</div>
+          <div class="ft-detail">6,000 TPM / 1,000 RPD<br>每次審核需 ~10,000 tokens，免費版放不下完整報告</div>
+        </div>
+        <div class="ft-card ft-bad">
+          <div class="ft-provider">Cerebras 免費方案</div>
+          <div class="ft-status">⚠️ Context 只有 8K</div>
+          <div class="ft-detail">Context 8K 嚴重截斷報告<br>Rate limit 嚴格，頻繁測試易觸發 429</div>
+        </div>
+        <div class="ft-card ft-bad">
+          <div class="ft-provider">OpenAI</div>
+          <div class="ft-status">❌ 無永久免費方案</div>
+          <div class="ft-detail">新帳號有 $5 試用額度<br>需信用卡才能繼續使用</div>
+        </div>
+      </div>
+      <div class="free-tier-conclusion">
+        💡 <strong>結論：所有免費方案都有根本性限制，無法完整審核 IFP 測試報告。</strong><br>
+        最便宜的付費方案是 <strong>Groq Dev Tier</strong>（估計 6 人每月 $1～$3 美元），
+        最高品質是 <strong>Claude Haiku 4.5</strong>（估計 6 人每月 $2～$5 美元）。
+      </div>
+    </div>
+
+    <!-- 建議 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">🎯 工具選型建議</h2>
+      <div class="recommend-steps">
+        <div class="rec-step">
+          <div class="rec-num">Step 1</div>
+          <div class="rec-content">
+            <strong>展示期（現在）</strong><br>
+            申請 Anthropic 新帳號 → 獲得 $5 免費額度 → 約可審核 250 份報告 → 足夠展示工具成效
+          </div>
+        </div>
+        <div class="rec-step">
+          <div class="rec-num">Step 2</div>
+          <div class="rec-content">
+            <strong>申請預算</strong><br>
+            以「每月 $5 美元（≈165 台幣）」向老闆申請，選用 Claude Haiku 4.5<br>
+            這筆費用比 1 小時的人工審核時間便宜
+          </div>
+        </div>
+        <div class="rec-step">
+          <div class="rec-num">Step 3</div>
+          <div class="rec-content">
+            <strong>長期維護</strong><br>
+            Claude Haiku 4.5：每月約 $3～$5，品質最佳，建議作為正式方案<br>
+            若預算實在有限：Groq Dev Tier 每月 $1～$3，品質次之但費用更低
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /compare-wrap -->
+  </div><!-- /modal-box -->
+</div><!-- /apiComparePage -->
+
+<!-- ════════════════════════════════════════════════════════
+     AI 審核限制說明頁面
+═════════════════════════════════════════════════════════ -->
+<div id="limitPage" class="modal-overlay" style="display:none" onclick="closeModalOnBg(event,'limitPage')">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('limitPage')">✕</button>
+  <div class="compare-wrap">
+
+    <div class="compare-header">
+      <h1 class="compare-title">AI 審核機制說明</h1>
+      <p class="compare-subtitle">使用前必讀 · 了解工具的能力邊界，才能正確解讀審核結果</p>
+    </div>
+
+    <!-- 核心定位 -->
+    <div class="limit-positioning">
+      <div class="pos-icon">🔬</div>
+      <div class="pos-content">
+        <div class="pos-title">這個工具的正確定位</div>
+        <div class="pos-desc">
+          <strong>初步篩查輔助工具，不是自動化取代人工的系統。</strong><br>
+          目標是把 PDM 人員翻閱一份報告從 <span class="pos-highlight">20 分鐘</span> 壓縮到 <span class="pos-highlight">2 分鐘</span>，
+          快速找出需要關注的 FAIL / WARN 項目，剩下的再由工程師確認。<br><br>
+          AI 的判定結論是「建議參考」，最終判定責任仍在工程師。
+        </div>
+      </div>
+    </div>
+
+    <!-- 限制一覽 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">⚠️ 限制總覽</h2>
+      <div class="limit-overview-grid">
+        <div class="lim-card lim-critical">
+          <div class="lim-icon">📄</div>
+          <div class="lim-title">掃描件 PDF 無法處理</div>
+          <div class="lim-level">🔴 硬性限制</div>
+        </div>
+        <div class="lim-card lim-critical">
+          <div class="lim-icon">📊</div>
+          <div class="lim-title">波形圖 / 截圖無法讀取</div>
+          <div class="lim-level">🔴 硬性限制</div>
+        </div>
+        <div class="lim-card lim-major">
+          <div class="lim-icon">🏭</div>
+          <div class="lim-title">不同供應商格式差異</div>
+          <div class="lim-level">🟠 需要調整規則</div>
+        </div>
+        <div class="lim-card lim-major">
+          <div class="lim-icon">📏</div>
+          <div class="lim-title">規則資料庫尚未完整</div>
+          <div class="lim-level">🟠 持續完善中</div>
+        </div>
+        <div class="lim-card lim-minor">
+          <div class="lim-icon">🧠</div>
+          <div class="lim-title">AI 理解能力有上限</div>
+          <div class="lim-level">🟡 模型能力限制</div>
+        </div>
+        <div class="lim-card lim-minor">
+          <div class="lim-icon">💰</div>
+          <div class="lim-title">免費模型品質不足</div>
+          <div class="lim-level">🟡 成本限制</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 限制詳細說明 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">🔴 硬性限制（技術上無法克服）</h2>
+
+      <div class="limit-detail-card">
+        <div class="ldc-header">
+          <span class="ldc-num">限制 1</span>
+          <span class="ldc-title">掃描件 PDF（圖片型 PDF）完全無法處理</span>
+          <span class="ldc-badge badge-fail">硬性限制</span>
+        </div>
+        <div class="ldc-body">
+          <div class="ldc-section">
+            <div class="ldc-label">📌 是什麼問題</div>
+            <p>PDF 分為兩種：
+            <br>① <strong>數位原生 PDF</strong>：用 Word、CAD、測試軟體直接匯出的 PDF，文字是可選取的，工具可以讀取。
+            <br>② <strong>掃描件 PDF</strong>：把紙本報告用掃描機掃描後儲存的 PDF，內容實際上是圖片，沒有文字層，工具完全讀不到任何內容。
+            </p>
+          </div>
+          <div class="ldc-section">
+            <div class="ldc-label">🔍 如何判斷你的 PDF 是哪種</div>
+            <p>用 Adobe Reader 或 Chrome 開啟 PDF，試著用滑鼠選取文字：
+            <br>✅ 可以選取 → 數位原生 PDF，工具可以處理
+            <br>❌ 無法選取（整頁都是圖片）→ 掃描件，工具無法處理
+            </p>
+          </div>
+          <div class="ldc-section">
+            <div class="ldc-label">❓ 為什麼無法解決</div>
+            <p>要處理掃描件需要 OCR（光學字元辨識）技術，這需要：
+            <br>① 將 PDF 每頁轉成圖片
+            <br>② 用 OCR 引擎識別圖片中的文字
+            <br>③ 識別結果再送給 AI 審核
+            <br><br>OCR 對中文技術文件（含表格、特殊符號、單位）準確率只有 85～90%，
+            識別錯誤會直接影響 AI 的判定結果。目前工具架構不支援圖片傳輸，
+            加入 OCR 需要重新設計後端。</p>
+          </div>
+          <div class="ldc-section">
+            <div class="ldc-label">✅ 當前解法</div>
+            <p>要求供應商提供<strong>數位原生 PDF</strong>（從測試軟體直接匯出），
+            而非掃描版本。大多數測試儀器（Tektronix、Keysight、AP525）都能直接匯出原生 PDF。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="limit-detail-card">
+        <div class="ldc-header">
+          <span class="ldc-num">限制 2</span>
+          <span class="ldc-title">波形圖、眼圖截圖、示意圖中的數據無法讀取</span>
+          <span class="ldc-badge badge-fail">硬性限制</span>
+        </div>
+        <div class="ldc-body">
+          <div class="ldc-section">
+            <div class="ldc-label">📌 是什麼問題</div>
+            <p>測試報告通常包含大量圖形：
+            <br>• 示波器波形截圖（T1～T6 時序、開關機時序）
+            <br>• VBO / eDP / HDMI 眼圖（8 個 RX 通道的眼圖截圖）
+            <br>• 音頻頻率響應曲線圖
+            <br>• 電源時序波形圖
+            <br><br>這些圖片中的數值（如示波器測量值）工具完全無法讀取，
+            只能依賴圖片<strong>旁邊</strong>的文字數據表格。
+            </p>
+          </div>
+          <div class="ldc-section">
+            <div class="ldc-label">🔍 實際影響</div>
+            <p>以電氣性能報告（QR-DQC-HT-114）為例：
+            <br>• 屏時序 T1～T6：報告有數值表格 → <strong>AI 可以讀取並判定</strong> ✅
+            <br>• VBO 眼圖：每個通道只有圖片 + 旁邊的 "PASS" 字樣 → <strong>AI 只能讀到 PASS 標注，無法驗證眼圖本身</strong> ⚠️
+            <br>• 示波器波形圖（T1、T2...的波形截圖）：純圖片 → <strong>AI 完全看不到</strong> ❌
+            </p>
+          </div>
+          <div class="ldc-section">
+            <div class="ldc-label">❓ 為什麼無法解決</div>
+            <p>要讀取圖片中的數值需要：
+            <br>① 將 PDF 每頁轉成高解析度圖片
+            <br>② 用視覺 AI（GPT-4o Vision / Claude Vision）分析圖片中的數值
+            <br>③ 費用大幅增加（圖片 token 比文字貴 10～50 倍）
+            <br>④ 視覺 AI 對測試圖表的數值識別準確率仍有限
+            <br><br>目前工具只傳送 PDF 文字層，不支援圖片分析。
+            這是設計取捨，優先保證文字數據的準確性。</p>
+          </div>
+          <div class="ldc-section">
+            <div class="ldc-label">✅ 當前解法</div>
+            <p>AI 對無法從圖片讀取數值的項目，會標注「波形圖，無數值，以報告判定為準」，
+            表示採信報告已有的 PASS/FAIL 標注，不做獨立驗證。
+            工程師應對這類項目進行人工二次確認。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 主要限制 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">🟠 主要限制（可逐步改善）</h2>
+
+      <div class="limit-detail-card">
+        <div class="ldc-header">
+          <span class="ldc-num">限制 3</span>
+          <span class="ldc-title">不同供應商的報告格式差異導致規則不適用</span>
+          <span class="ldc-badge badge-warn">可改善</span>
+        </div>
+        <div class="ldc-body">
+          <div class="ldc-section">
+            <div class="ldc-label">📌 是什麼問題</div>
+            <p>目前工具的審核規則主要基於 <strong>CVTE（廣州視睿）</strong> 的報告格式建立。
+            不同主板供應商（Samsung、TPV、Sharp、QSEE 等）的報告：
+            <br>• 欄位名稱不同（"實測值" vs "Measured Value" vs "Test Result"）
+            <br>• 表格結構不同（有的是橫向表格，有的是縱向）
+            <br>• 判定用詞不同（PASS/FAIL vs OK/NG vs 合格/不合格 vs ✓/✗）
+            <br>• 測試項目順序和分類不同
+            <br>• 格式碼不同（QR-DQC-HT-114 是 CVTE 內部編號）
+            </p>
+          </div>
+          <div class="ldc-section">
+            <div class="ldc-label">🔍 實際影響</div>
+            <div class="impact-table">
+              <table>
+                <thead><tr><th>供應商類型</th><th>預估準確率</th><th>說明</th></tr></thead>
+                <tbody>
+                  <tr><td>CVTE 格式（已建規則）</td><td class="acc-high">85～90%</td><td>規則最完整</td></tr>
+                  <tr><td>其他供應商（相似格式）</td><td class="acc-mid">70～80%</td><td>大部分可適用，部分需調整</td></tr>
+                  <tr><td>全新格式（無規則）</td><td class="acc-low">50～65%</td><td>AI 用通用邏輯判斷，可能有誤</td></tr>
+                  <tr><td>英文報告（第三方認證機構）</td><td class="acc-mid">75～85%</td><td>英文規則已建立</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ldc-section">
+            <div class="ldc-label">✅ 解決方向</div>
+            <p>每遇到新供應商的報告，測試後把格式特徵反饋，
+            由開發人員在工具規則庫中加入對應格式的識別規則。
+            隨著樣本報告累積，準確率會逐步提升。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="limit-detail-card">
+        <div class="ldc-header">
+          <span class="ldc-num">限制 4</span>
+          <span class="ldc-title">規則資料庫尚不完整，新測試類型可能判定偏差</span>
+          <span class="ldc-badge badge-warn">可改善</span>
+        </div>
+        <div class="ldc-body">
+          <div class="ldc-section">
+            <div class="ldc-label">📌 是什麼問題</div>
+            <p>工具目前有 17 種測試類型的審核規則，但每種類型的規則詳細程度不同：
+            <br>• <strong>規則完整</strong>：EMI、ELEC、USB 訊號、VBO 眼圖
+            <br>• <strong>規則基礎</strong>：溫升試驗、安規（IEC 62368-1）、能效測試
+            <br>• <strong>規則較薄弱</strong>：可靠性試驗（因報告格式多樣）、軟體功能測試
+            <br><br>規則薄弱的類型，AI 判定依賴通用邏輯，容易漏掉特殊邊界條件。</p>
+          </div>
+          <div class="ldc-section">
+            <div class="ldc-label">✅ 解決方向</div>
+            <p>持續將新的報告樣本加入 Project，由開發人員分析格式並強化對應規則。
+            建議優先強化你們最常審核的報告類型。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 輕微限制 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">🟡 輕微限制（了解即可）</h2>
+
+      <div class="limit-detail-card">
+        <div class="ldc-header">
+          <span class="ldc-num">限制 5</span>
+          <span class="ldc-title">AI 語言模型本身的理解能力有上限</span>
+          <span class="ldc-badge badge-warn">模型限制</span>
+        </div>
+        <div class="ldc-body">
+          <div class="ldc-section">
+            <div class="ldc-label">📌 已知 AI 容易出錯的情境</div>
+            <ul class="limit-list">
+              <li><strong>複雜的裕量計算</strong>：部分 AI 模型在計算「裕量 = 限值 − 實測值」時可能算錯，尤其當數值有多個小數位時</li>
+              <li><strong>單位換算</strong>：ms 和 s、dBm 和 dBµV/m、mV 和 V 混用時可能判斷錯誤</li>
+              <li><strong>模糊描述的判定</strong>：如「聲學測試：無機振」這類定性描述，AI 無法驗證，只能信任報告</li>
+              <li><strong>條件式規格</strong>：如「T6 ≥ 100ms，但若 T5 &lt; 500ms 則豁免」這類有條件的規格，AI 可能忽略條件</li>
+              <li><strong>跨頁數據關聯</strong>：測試條件在第 1 頁，數據在第 8 頁，AI 需要正確關聯，有時可能遺漏</li>
+            </ul>
+          </div>
+          <div class="ldc-section">
+            <div class="ldc-label">🔍 不同 AI 模型的差異</div>
+            <div class="impact-table">
+              <table>
+                <thead><tr><th>AI 模型</th><th>理解能力</th><th>計算準確度</th><th>繁中品質</th></tr></thead>
+                <tbody>
+                  <tr><td>Claude Sonnet 4.6（付費）</td><td class="acc-high">⭐⭐⭐⭐⭐</td><td class="acc-high">⭐⭐⭐⭐⭐</td><td class="acc-high">⭐⭐⭐⭐⭐</td></tr>
+                  <tr><td>Claude Haiku 4.5（付費）</td><td class="acc-high">⭐⭐⭐⭐</td><td class="acc-high">⭐⭐⭐⭐</td><td class="acc-high">⭐⭐⭐⭐⭐</td></tr>
+                  <tr><td>Groq Llama 3.3 70B（免費）</td><td class="acc-mid">⭐⭐⭐</td><td class="acc-mid">⭐⭐⭐</td><td class="acc-low">⭐⭐</td></tr>
+                  <tr><td>Cerebras gpt-oss-120b（免費）</td><td class="acc-mid">⭐⭐⭐</td><td class="acc-mid">⭐⭐</td><td class="acc-low">⭐⭐</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="limit-detail-card">
+        <div class="ldc-header">
+          <span class="ldc-num">限制 6</span>
+          <span class="ldc-title">免費模型的 Token 限制導致報告內容被截斷</span>
+          <span class="ldc-badge badge-warn">成本限制</span>
+        </div>
+        <div class="ldc-body">
+          <div class="ldc-section">
+            <div class="ldc-label">📌 是什麼問題</div>
+            <p>免費 AI 模型每次能接收的文字量（Token）有嚴格限制：
+            <br>• Groq 免費版：每分鐘 6,000 tokens（約 4,500 中文字）
+            <br>• Cerebras 免費版：Context window 僅 8,000 tokens
+            <br><br>一份完整的 EMI 測試報告文字量約 <strong>228,937 字元（約 57,000 tokens）</strong>，
+            遠超免費版限制。工具使用「智慧萃取」技術優先保留關鍵數據行，
+            但仍有可能遺漏部分數據。</p>
+          </div>
+          <div class="ldc-section">
+            <div class="ldc-label">🔍 智慧萃取機制說明</div>
+            <p>工具會依以下優先順序保留數據：
+            <br>① <span style="color:#c00">超標數據行（Margin &lt; 0）</span> — 最高優先，確保 FAIL 原因不遺漏
+            <br>② PASS/FAIL 結論行 — 各測試項目的最終判定
+            <br>③ 接近超標行（Margin 0～6 dB）— WARN 項目
+            <br><br>封面資訊會保留型號、主板、測試日期，但略去測試人員、公司地址、SN 碼等無關資訊。</p>
+          </div>
+          <div class="ldc-section">
+            <div class="ldc-label">✅ 根本解法</div>
+            <p>使用付費 AI 模型（Claude Haiku 4.5 的 Context 為 200K tokens，Sonnet 4.6 為 1M tokens），
+            完整報告不需截斷，審核準確率大幅提升。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 優缺點總結 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">📊 AI 審核機制優缺點總結</h2>
+      <div class="pros-cons-grid">
+        <div class="pc-card">
+          <div class="pc-header" style="background:#16a34a">✅ AI 審核的優點</div>
+          <div class="pc-body">
+            <ul class="limit-list">
+              <li><strong>速度快</strong>：一份報告 30 秒～2 分鐘完成初審，人工需 15～30 分鐘</li>
+              <li><strong>不漏掉數值</strong>：AI 會逐行掃描所有數字，不像人工容易因疲勞漏看</li>
+              <li><strong>一致性</strong>：每次用相同規則判定，不受個人經驗差異影響</li>
+              <li><strong>矛盾偵測</strong>：自動比對封面結論與內頁數據是否一致（CONTRADICTION），這是人工容易忽略的</li>
+              <li><strong>裕量計算</strong>：自動計算 Margin 並標注接近超標的項目（WARN）</li>
+              <li><strong>多語言報告</strong>：中文、英文、中英混合報告均可處理</li>
+              <li><strong>可擴展性</strong>：規則庫可持續更新，覆蓋更多供應商格式</li>
+              <li><strong>記錄存檔</strong>：匯出 CSV 方便留存審核記錄</li>
+            </ul>
+          </div>
+        </div>
+        <div class="pc-card">
+          <div class="pc-header" style="background:#dc2626">❌ AI 審核的缺點</div>
+          <div class="pc-body">
+            <ul class="limit-list">
+              <li><strong>無法分析圖片</strong>：波形圖、眼圖、頻率響應曲線中的數值無法讀取</li>
+              <li><strong>掃描件無法處理</strong>：需要數位原生 PDF</li>
+              <li><strong>不理解物理意義</strong>：AI 只比對數字，不理解「為什麼 T3 = -50ms 在這個設計中代表風險」</li>
+              <li><strong>新格式需調整</strong>：遇到從未見過的報告格式，需人工確認後更新規則</li>
+              <li><strong>複雜條件規格</strong>：有條件的規格邊界（如某條件成立時豁免）可能判斷錯誤</li>
+              <li><strong>無法查閱外部文件</strong>：面板規格書、IC Datasheet 中的特定限值 AI 不知道，以工具內建規則為準</li>
+              <li><strong>最終責任仍在人</strong>：AI 判定 PASS 不代表可以不看報告，工程師需對結論負責</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 正確使用方式 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">✅ 正確的使用流程</h2>
+      <div class="usage-flow">
+        <div class="uf-step">
+          <div class="uf-num">1</div>
+          <div class="uf-content">
+            <strong>確認 PDF 格式</strong><br>
+            用 Adobe/Chrome 試選文字，確認是數位原生 PDF 再上傳
+          </div>
+        </div>
+        <div class="uf-arrow">→</div>
+        <div class="uf-step">
+          <div class="uf-num">2</div>
+          <div class="uf-content">
+            <strong>選擇正確的審核類型</strong><br>
+            若不確定選「AUTO 自動識別」，AI 會自行判斷
+          </div>
+        </div>
+        <div class="uf-arrow">→</div>
+        <div class="uf-step">
+          <div class="uf-num">3</div>
+          <div class="uf-content">
+            <strong>閱讀 AI 審核結果</strong><br>
+            重點關注 FAIL（超標）和 CONTRADICTION（矛盾）項目
+          </div>
+        </div>
+        <div class="uf-arrow">→</div>
+        <div class="uf-step">
+          <div class="uf-num">4</div>
+          <div class="uf-content">
+            <strong>人工二次確認</strong><br>
+            對 FAIL / CONTRADICTION 項目，回到原始報告確認，對波形圖項目人工核查
+          </div>
+        </div>
+        <div class="uf-arrow">→</div>
+        <div class="uf-step">
+          <div class="uf-num">5</div>
+          <div class="uf-content">
+            <strong>匯出記錄</strong><br>
+            匯出 CSV 存檔，作為工程審查的輔助依據
+          </div>
+        </div>
+      </div>
+      <div class="usage-warning">
+        ⚠️ <strong>特別提醒</strong>：AI 審核結果為「輔助參考」，不應作為唯一判定依據。
+        對安規（IEC 62368-1）、能效（EU 2019/2021）等有法規要求的測試類型，
+        最終結論必須由具備相關資質的工程師確認。
+      </div>
+    </div>
+
+  </div><!-- /compare-wrap -->
+  </div><!-- /modal-box -->
+</div><!-- /limitPage -->
+
+
 </body>
 </html>
