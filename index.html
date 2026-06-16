@@ -2306,6 +2306,7 @@ function renderMarkdown(text) {
       .replace(/\n/g,'<br>');
   }
 
+  window._autoReviewRaw = text;  // 儲存供下載用
   area.innerHTML = `
     <div class="result-header">
       <div class="result-title-row">
@@ -2328,6 +2329,8 @@ function renderMarkdown(text) {
 
     <div class="export-bar">
       <button class="export-btn" onclick="copyResult()">📋 複製結果</button>
+      <button class="export-btn export-btn-html" onclick="downloadAutoResult('html')">📄 下載 HTML 報告</button>
+      <button class="export-btn export-btn-csv" onclick="downloadAutoResult('csv')">📊 下載 CSV</button>
     </div>
   `;
 }
@@ -2838,6 +2841,177 @@ tbody tr:hover td{background:rgba(38,80,232,.03)}
   <div>審核結果為輔助參考，最終判定責任由工程師確認 · 產生時間：${dt}</div>
 </div>
 
+</body>
+</html>`;
+
+  const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fname + '_審核報告_' + ts + '.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+
+function downloadAutoResult(format) {
+  const raw = window._autoReviewRaw;
+  if (!raw) { alert('尚無審核結果'); return; }
+
+  const fname = (selectedFile?.name || 'report').replace('.pdf','');
+  const stage = document.getElementById('stage')?.value || '';
+  const now   = new Date();
+  const ts    = now.getFullYear() + '-'
+    + String(now.getMonth()+1).padStart(2,'0') + '-'
+    + String(now.getDate()).padStart(2,'0');
+  const dt    = now.toLocaleString('zh-TW');
+
+  if (format === 'csv') {
+    _downloadCSV(raw, fname, ts);
+  } else {
+    _downloadAutoHTML(raw, fname, stage, ts, dt);
+  }
+}
+
+function _downloadAutoHTML(raw, fname, stage, ts, dt) {
+  const vm = raw.match(/(?:最終判定|整體判定|整體結論)[：:]\s*\*{0,2}\s*(PASS|FAIL|WARN|CONTRADICTION)\s*\*{0,2}/);
+  const overall = vm ? vm[1] : 'UNKNOWN';
+  const overallColor = { PASS:'#16a34a', FAIL:'#dc2626', WARN:'#d97706', CONTRADICTION:'#9333ea', UNKNOWN:'#6b7280' };
+  const overallBg    = { PASS:'#f0fdf4', FAIL:'#fef2f2', WARN:'#fffbeb', CONTRADICTION:'#faf5ff', UNKNOWN:'#f9fafb' };
+
+  const passCount = (raw.match(/\bPASS\b/g)||[]).length;
+  const failCount = (raw.match(/\bFAIL\b/g)||[]).length;
+  const warnCount = (raw.match(/\bWARN\b/g)||[]).length;
+  const contCount = (raw.match(/\bCONTRADICTION\b/g)||[]).length;
+
+  function mdToHtml(text) {
+    return text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(/^#{3}\s(.+)$/gm,'<h3>$1</h3>')
+      .replace(/^#{2}\s(.+)$/gm,'<h2>$1</h2>')
+      .replace(/^#{1}\s(.+)$/gm,'<h1>$1</h1>')
+      .replace(/^---+$/gm,'<hr>')
+      .replace(/((?:^\|.+\|\n?)+)/gm, function(block) {
+        const rows = block.trim().split('\n');
+        let out = '<table>', isFirst = true;
+        rows.forEach(function(row) {
+          if (/^\|[\s\-\|:]+\|$/.test(row)) return;
+          const cells = row.replace(/^\||\|$/g,'').split('|').map(c => c.trim());
+          if (isFirst) {
+            out += '<thead><tr>' + cells.map(c => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>';
+            isFirst = false;
+          } else {
+            const rc = cells.some(c => /^FAIL$/.test(c)) ? ' class="row-fail"'
+              : cells.some(c => /^CONTRADICTION$/.test(c)) ? ' class="row-contradiction"'
+              : cells.some(c => /^WARN$/.test(c)) ? ' class="row-warn"'
+              : cells.some(c => /^PASS$/.test(c)) ? ' class="row-pass"' : '';
+            out += '<tr' + rc + '>' + cells.map(function(c) {
+              const vc = /^PASS$/.test(c) ? ' class="verdict-pass"'
+                : /^FAIL$/.test(c) ? ' class="verdict-fail"'
+                : /^WARN$/.test(c) ? ' class="verdict-warn"'
+                : /^CONTRADICTION$/.test(c) ? ' class="verdict-cont"'
+                : /^NA$/.test(c) ? ' class="verdict-na"' : '';
+              return '<td' + vc + '>' + c + '</td>';
+            }).join('') + '</tr>';
+          }
+        });
+        if (!isFirst) out += '</tbody>';
+        return out + '</table>';
+      })
+      .replace(/\n{2,}/g,'</p><p>')
+      .replace(/\n/g,'<br>');
+  }
+
+  const bodyHtml = mdToHtml(raw);
+
+  const fullHtml = `<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${fname} 測試報告審核結果 ${ts}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft JhengHei","Noto Sans TC","Segoe UI",sans-serif;background:#f4f6fb;color:#13172e;font-size:14px;line-height:1.7;min-height:100vh}
+.report-header{background:linear-gradient(135deg,#1a3ccc 0%,#2650e8 60%,#4a6ef5 100%);padding:32px 48px;color:#fff}
+.rh-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.rh-logo{font-size:12px;font-weight:700;letter-spacing:1.5px;opacity:.8;text-transform:uppercase}
+.rh-badge{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:600}
+.rh-title{font-size:22px;font-weight:700;margin-bottom:6px}
+.rh-sub{font-size:13px;opacity:.8}
+.summary-bar{background:#fff;border-bottom:1px solid #e0e4ef;padding:20px 48px;display:flex;align-items:center;flex-wrap:wrap;gap:0}
+.sum-card{padding:14px 28px;border-right:1px solid #e8eaf2;text-align:center;min-width:110px}
+.sum-card:last-child{border-right:none}
+.sum-label{font-size:11px;font-weight:600;color:#7a8099;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.sum-value{font-size:26px;font-weight:800;line-height:1}
+.sum-overall .sum-value{color:${overallColor[overall]};background:${overallBg[overall]};border-radius:8px;padding:4px 16px;font-size:18px}
+.sum-pass .sum-value{color:#16a34a}
+.sum-fail .sum-value{color:#dc2626}
+.sum-warn .sum-value{color:#d97706}
+.sum-cont .sum-value{color:#9333ea}
+.report-body{max-width:1100px;margin:0 auto;padding:32px 24px}
+h1{font-size:18px;font-weight:700;color:#1a3ccc;margin:28px 0 12px;padding-bottom:8px;border-bottom:2px solid #e0e4ef}
+h2{font-size:15px;font-weight:700;color:#2650e8;margin:22px 0 10px;padding-left:10px;border-left:3px solid #2650e8}
+h3{font-size:13px;font-weight:700;color:#4a6ef5;margin:16px 0 8px}
+p{margin-bottom:10px}
+hr{border:none;border-top:1px solid #e0e4ef;margin:20px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+thead{background:linear-gradient(135deg,#2650e8,#4a6ef5)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:#fff;font-size:12px;letter-spacing:.3px;white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid #e8eaf2;vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(38,80,232,.03)}
+.row-pass td{background:rgba(22,163,74,.03)}
+.row-fail td{background:rgba(220,38,38,.05)}
+.row-warn td{background:rgba(217,119,6,.04)}
+.row-contradiction td{background:rgba(147,51,234,.04)}
+.verdict-pass,.verdict-fail,.verdict-warn,.verdict-cont,.verdict-na{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
+.verdict-pass{background:#dcfce7;color:#16a34a;border:1px solid #86efac}
+.verdict-fail{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5}
+.verdict-warn{background:#fef3c7;color:#d97706;border:1px solid #fde68a}
+.verdict-cont{background:#f3e8ff;color:#9333ea;border:1px solid #d8b4fe}
+.verdict-na{background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1}
+.report-footer{background:#1a2040;color:rgba(255,255,255,.6);text-align:center;padding:20px 48px;font-size:12px;margin-top:40px}
+.rf-main{color:rgba(255,255,255,.9);font-weight:600;margin-bottom:4px}
+@media print{.summary-bar{break-inside:avoid}table{break-inside:auto}tr{break-inside:avoid}h1,h2{break-after:avoid}}
+
+.export-btn-html {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-color: var(--accent) !important;
+}
+.export-btn-html:hover { background: #0052cc !important; }
+.export-btn-csv {
+  background: #16a34a !important;
+  color: #fff !important;
+  border-color: #16a34a !important;
+}
+.export-btn-csv:hover { background: #15803d !important; }
+
+</style>
+</head>
+<body>
+<div class="report-header">
+  <div class="rh-top">
+    <div class="rh-logo">IFP Test Report Auto-Review · 自動審核模式</div>
+    <div class="rh-badge">AI 審核報告 · ${ts}</div>
+  </div>
+  <div class="rh-title">📋 ${fname}</div>
+  <div class="rh-sub">${stage ? '測試階段：' + stage + '　·　' : ''}產生時間：${dt}</div>
+</div>
+<div class="summary-bar">
+  <div class="sum-card sum-overall"><div class="sum-label">整體判定</div><div class="sum-value">${overall}</div></div>
+  <div class="sum-card sum-pass"><div class="sum-label">✅ PASS</div><div class="sum-value">${passCount}</div></div>
+  <div class="sum-card sum-fail"><div class="sum-label">❌ FAIL</div><div class="sum-value">${failCount}</div></div>
+  <div class="sum-card sum-warn"><div class="sum-label">⚠️ WARN</div><div class="sum-value">${warnCount}</div></div>
+  ${contCount > 0 ? `<div class="sum-card sum-cont"><div class="sum-label">🔴 矛盾</div><div class="sum-value">${contCount}</div></div>` : ''}
+</div>
+<div class="report-body"><p>${bodyHtml}</p></div>
+<div class="report-footer">
+  <div class="rf-main">IFP 測試報告自動審核工具 · 自動審核模式</div>
+  <div>審核結果為輔助參考，最終判定責任由工程師確認 · ${dt}</div>
+</div>
 </body>
 </html>`;
 
