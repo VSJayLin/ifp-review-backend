@@ -1997,24 +1997,48 @@ ${rule}
 
   // Claude.ai 模式：在 userPrompt 後面加上 HTML 報告輸出指令
   const htmlOutputInstruction = `
+
 ---
 
-## 📄 輸出格式要求（重要）
+## 輸出報告格式（重要）
 
-完成逐項審核後，請在回覆最後額外輸出一份完整的 **HTML 報告檔案**（程式碼區塊），內容包含：
+完成逐項審核後，請將完整審核結果製作成一份獨立的 HTML 報告檔案。
 
 ### HTML 報告規格
-1. **報告標題區**：檔名、測試階段、審核日期、整體判定結果（PASS/FAIL/WARN/CONTRADICTION 用顏色標示）
-2. **統計摘要**：PASS / FAIL / WARN / CONTRADICTION 各項數量
-3. **逐項審核表格**：序號、子模組、測試項目、規格限值、實測值、AI判定、說明
-   - FAIL 列：淺紅色背景
-   - WARN 列：淺黃色背景  
-   - PASS 列：淺綠色背景
-   - CONTRADICTION 列：淺紫色背景
-4. **問題項目摘要**：列出所有 FAIL / WARN 項目及建議處理方式
-5. **樣式要求**：藍色漸層標題列、清晰邊框、PASS/FAIL/WARN 顯示為彩色 Badge、適合列印
 
-請確保 HTML 檔案完整可獨立開啟，放在 \`\`\`html ... \`\`\` 程式碼區塊內。
+**報告頂端摘要區：**
+- 報告標題（含檔案名稱、測試階段、審核日期）
+- 整體判定結果大字顯示（PASS 綠色 / FAIL 紅色 / WARN 橘色 / CONTRADICTION 紫色）
+- 統計數字：PASS 幾項、FAIL 幾項、WARN 幾項、CONTRADICTION 幾項
+
+**逐項審核表格欄位：**
+序號 ｜ 子模組 ｜ 測試項目 ｜ 規格限值 ｜ 實測值 ｜ 裕量 ｜ AI判定 ｜ 說明
+
+**表格列顏色：**
+- FAIL 列：淺紅色背景 #fff0f0
+- WARN 列：淺黃色背景 #fffbe6
+- PASS 列：淺綠色背景 #f0fff4
+- CONTRADICTION 列：淺紫色背景 #faf0ff
+- NA 列：淺灰色背景 #f8f9fa
+
+**AI判定欄位顯示為 Badge：**
+- PASS：綠色圓角標籤
+- FAIL：紅色圓角標籤
+- WARN：橘色圓角標籤
+- CONTRADICTION：紫色圓角標籤
+
+**報告底部摘要區：**
+- 列出所有 FAIL 項目：項目名稱 + 問題描述 + 建議處理方式
+- 列出所有 WARN 項目：項目名稱 + 風險說明
+- 列出所有 CONTRADICTION 項目：說明矛盾內容
+
+**樣式要求：**
+- 頂端藍色漸層 Header（#1a3ccc → #4a6ef5）
+- 白色背景，文字深色，表格清晰邊框
+- 字型：Microsoft JhengHei 或 Noto Sans TC
+- 適合列印（print CSS）
+
+請將完整的 HTML 報告放在程式碼區塊內輸出，確保可獨立開啟。
 `;
 
   return { system: systemPrompt, user: userPrompt, htmlInstruction: htmlOutputInstruction };
