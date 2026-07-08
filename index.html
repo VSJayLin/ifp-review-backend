@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IFP 測試報告審核工具 v4.7</title>
+<title>IFP 測試報告審核工具 v4.19</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -1232,7 +1232,7 @@ kbd { background:var(--card); border:1px solid var(--border); border-radius:4px;
     <button class="hdr-btn" onclick="openModal('limitPage')">⚠️ AI 審核限制</button>
     <button class="hdr-btn" onclick="showHistory()" title="最近審核記錄">📋 審核記錄</button>
     <button class="hdr-btn" onclick="copyShareUrl()" title="複製工具網址">🔗 分享工具</button>
-    <span class="version-tag">v4.7 · IFP QC</span>
+    <span class="version-tag">v4.19 · IFP QC</span>
   </div>
 </header>
 
@@ -1580,8 +1580,8 @@ window.addEventListener('load', () => {
     cuz.addEventListener('dragleave', function() { cuz.classList.remove('drag-over'); });
     cuz.addEventListener('drop', function(e) {
       e.preventDefault(); cuz.classList.remove('drag-over');
-      var f = e.dataTransfer.files[0];
-      if (f && f.type === 'application/pdf') handleClaudeFile({ target: { files: [f] } });
+      var files = Array.from(e.dataTransfer.files || []);
+      if (files.length) handleClaudeFile({ target: { files: files, value: '' } });
     });
     cuz.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); document.getElementById('claudeFileInput').click(); }
@@ -3930,7 +3930,146 @@ function escapeHtml(s) {
       </div>
     </div>
 
-    <!-- 各方案優缺點詳析 -->
+    <!-- 簡體轉繁體能力評估 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">🈳 簡體轉繁體能力（重要：本工具報告來源多為簡體中文）</h2>
+      <p class="compare-note">⚠️ 這裡評估的不是「模型繁體中文寫得好不好」，而是「拿到簡體來源的PDF時，會不會主動轉換成繁體輸出，還是照抄原文的簡體字」——這是兩件不同的事，一個模型可能繁體中文寫作能力很強，但遇到簡體來源時卻習慣性照抄，除非明確下指令要求轉換（本工具目前的system prompt已加入這條明確指令）。<strong>以下評估沒有正式的公開基準測試可以引用，是根據各家模型「指令遵循能力」與「中文訓練語料簡繁比例」推論而來，不是拿實際報告測出來的成績單，僅供參考。</strong></p>
+      <div class="detail-table-wrap">
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th style="width:160px">方案</th>
+              <th>指令遵循下的轉換可靠度</th>
+              <th>已知風險</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Claude 全系列</strong><br>（Sonnet 5／Haiku 4.5／Opus 4.8）</td>
+              <td>⭐⭐⭐⭐⭐ 高——明確指令下混雜簡體殘留機率低</td>
+              <td>若system prompt沒有明確要求轉換，仍有機率照抄原文用字；本工具已在規則裡明確要求逐字檢查，降低此風險</td>
+            </tr>
+            <tr>
+              <td><strong>Gemini 系列</strong><br>（2.5/3.x Flash、Pro）</td>
+              <td>⭐⭐⭐⭐ 中高——一般指令下多數會轉換，但長報告後段偶有簡繁混雜</td>
+              <td>Flash-Lite等級因模型較小，指令遵循強度較弱，混雜機率略高於Pro/Flash</td>
+            </tr>
+            <tr>
+              <td><strong>GPT-5.x 系列</strong></td>
+              <td>⭐⭐⭐ 中——已知社群回報有「輸出語言跟隨輸入語言」的傾向</td>
+              <td>即使明確要求繁體，遇到大量簡體原文時，較容易在專有名詞或表格內容處照抄簡體字，需要人工複查</td>
+            </tr>
+            <tr>
+              <td><strong>Groq／Cerebras 開源模型</strong><br>（Llama、GPT-OSS、GLM等）</td>
+              <td>⭐⭐ 低——中文訓練語料以簡體為主，指令遵循能力也較弱</td>
+              <td>混雜簡體字機率最高，長報告經常整段照抄原文用字，這也是本頁前面多處標註「繁中理解弱」的主因之一</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="compare-note">💡 不管選哪個方案，建議產出後都做一次「有沒有簡體字殘留」的人工抽查，尤其是表格內容跟專有名詞——這是目前唯一能保證100%抓到的方式，不要完全依賴模型自律。</p>
+    </div>
+
+    <!-- 各報告類型精準度對照 -->
+    <div class="compare-section">
+      <h2 class="compare-section-title">📐 各報告類型（typeSpecificRules）× API方案 精準度推論對照</h2>
+      <p class="compare-note">⚠️ <strong>再次強調：以下是根據每種報告類型「需要的推理複雜度」去推論各模型可能的表現，不是拿18種類型逐一實測出來的結果。</strong>實際準確度會因報告本身寫法、掃描品質、單次prompt長度等因素波動，這份對照只能當作「該花多少預算」的參考依據，不能當作準確度保證。</p>
+
+      <h3 style="margin:20px 0 10px;font-size:16px">先依報告類型的「所需推理複雜度」分三級</h3>
+      <div class="detail-table-wrap">
+        <table class="detail-table">
+          <thead>
+            <tr><th style="width:100px">複雜度</th><th>涵蓋類型</th><th>對AI能力的要求</th></tr>
+          </thead>
+          <tbody>
+            <tr class="row-warning">
+              <td><strong>高</strong></td>
+              <td>EMI、EMS、DERATING、ENERGY_EFFICIENCY、RELIABILITY_CVTE、SAFETY_IEC62368、SOFTWARE_FUNCTIONAL</td>
+              <td>需要跨欄位計算裕量%、辨識報告自訂門檻是否被悄悄改變（如能效等級被標「僅供參考」）、判斷Warning/Waste兩級而非照抄報告的OK、偵測共因性缺陷聚合——這些都需要多步驟推理與數值計算，容易出錯</td>
+            </tr>
+            <tr>
+              <td><strong>中</strong></td>
+              <td>ELEC、TEMP_RISE、VOLTAGE_RIPPLE、PWR_TIMING、DIFF_IMPEDANCE</td>
+              <td>主要是數值 vs 規格範圍比對、開區間規格（"/"）正確解讀，計算量中等，較少需要跨報告或跨欄位的間接推理</td>
+            </tr>
+            <tr>
+              <td><strong>低</strong></td>
+              <td>USB2_HUB、USB2_DEVICE、USB3_HOST、CRYSTAL、OTA_WIRELESS</td>
+              <td>多為儀器自動產生的結構化報告（如Keysight/TekExpress），數據已經是乾淨表格，AI主要工作是讀取與比對，不太需要複雜推理</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="margin:20px 0 10px;font-size:16px">各方案在三個複雜度等級的推論表現</h3>
+      <div class="detail-table-wrap">
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th style="width:160px">方案</th>
+              <th>高複雜度類型</th>
+              <th>中複雜度類型</th>
+              <th>低複雜度類型</th>
+              <th>建議搭配</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-highlight">
+              <td><strong>Claude Sonnet 5</strong></td>
+              <td>⭐⭐⭐⭐⭐ 可靠</td>
+              <td>⭐⭐⭐⭐⭐ 可靠</td>
+              <td>⭐⭐⭐⭐⭐ 可靠</td>
+              <td>全類型皆可，尤其推薦用在高複雜度類型（EMI/能效/降額/安規/軟體）</td>
+            </tr>
+            <tr>
+              <td><strong>Claude Haiku 4.5</strong></td>
+              <td>⭐⭐⭐⭐ 多數可靠，極複雜的多層矛盾偵測偶有遺漏</td>
+              <td>⭐⭐⭐⭐⭐ 可靠</td>
+              <td>⭐⭐⭐⭐⭐ 可靠</td>
+              <td>中低複雜度類型可放心用，高複雜度類型建議偶爾用Sonnet 5複查</td>
+            </tr>
+            <tr>
+              <td><strong>Claude Opus 4.8</strong></td>
+              <td>⭐⭐⭐⭐⭐ 可靠，複雜跨報告比對能力最強</td>
+              <td>⭐⭐⭐⭐⭐ 可靠（但相對Sonnet 5是不必要的高成本）</td>
+              <td>⭐⭐⭐⭐⭐ 可靠（同樣不需要用到這麼貴的模型）</td>
+              <td>只建議用在跨批次/跨版本比對這類最複雜的情境，其餘用Sonnet 5即可</td>
+            </tr>
+            <tr>
+              <td><strong>Gemini 3.5 Flash / 3.1 Pro</strong></td>
+              <td>⭐⭐⭐ 基本判定可以，但「悄悄改變門檻」「共因性聚合」這類需要質疑報告本身的檢查容易照單全收</td>
+              <td>⭐⭐⭐⭐ 尚可</td>
+              <td>⭐⭐⭐⭐⭐ 可靠</td>
+              <td>中低複雜度類型的高CP值選擇，高複雜度類型建議人工加強複查</td>
+            </tr>
+            <tr>
+              <td><strong>Gemini 2.5/3.1 Flash-Lite</strong></td>
+              <td>⭐⭐ 不建議——小模型對多步驟推理與跨欄位計算穩定性較差</td>
+              <td>⭐⭐⭐ 普通，簡單規格比對尚可</td>
+              <td>⭐⭐⭐⭐ 尚可</td>
+              <td>只建議用在USB/晶振這類低複雜度、結構化程度高的報告</td>
+            </tr>
+            <tr>
+              <td><strong>GPT-5.4 / GPT-5.5</strong></td>
+              <td>⭐⭐⭐⭐ 尚可，數值計算能力不錯，但矛盾偵測類的「質疑報告本身」邏輯較弱</td>
+              <td>⭐⭐⭐⭐ 尚可</td>
+              <td>⭐⭐⭐⭐⭐ 可靠</td>
+              <td>可用，但繁體中文輸出品質仍是短板，建議加強人工複查中文部分</td>
+            </tr>
+            <tr>
+              <td><strong>Groq／Cerebras 開源模型</strong></td>
+              <td>⭐⭐ 不建議——高複雜度類型的多步驟計算與矛盾偵測容易出錯或直接忽略規則</td>
+              <td>⭐⭐⭐ 普通</td>
+              <td>⭐⭐⭐⭐ 尚可，結構化報告即使小模型也能處理</td>
+              <td>只建議用在USB/晶振/OTA這類低複雜度類型，高複雜度類型務必人工複核</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="compare-note">💡 <strong>實務建議：如果預算有限，可以按報告類型分流</strong>——USB/晶振/OTA這類低複雜度、結構化程度高的報告，用便宜方案（Gemini Flash-Lite、Groq）就夠；EMI/EMS/降額/能效/安規/可靠性/軟體測試這類需要質疑報告本身、跨欄位計算的高複雜度報告，優先用Claude Sonnet 5或Haiku 4.5，準確度落差在這幾類最明顯。</p>
+    </div>
+
+
     <div class="compare-section">
       <h2 class="compare-section-title">📋 各方案優缺點詳析</h2>
       <div class="pros-cons-grid">
@@ -4380,7 +4519,7 @@ function escapeHtml(s) {
         <div class="ldc-body">
           <div class="ldc-section">
             <div class="ldc-label">📌 是什麼問題</div>
-            <p>工具目前有 17 種測試類型的審核規則，但每種類型的規則詳細程度不同：
+            <p>工具目前有 18 種測試類型的審核規則，但每種類型的規則詳細程度不同：
             <br>• <strong>規則完整</strong>：EMI、ELEC、USB 訊號、VBO 眼圖
             <br>• <strong>規則基礎</strong>：溫升試驗、安規（IEC 62368-1）、能效測試
             <br>• <strong>規則較薄弱</strong>：可靠性試驗（因報告格式多樣）、軟體功能測試
