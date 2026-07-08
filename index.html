@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IFP 測試報告審核工具 v4.6</title>
+<title>IFP 測試報告審核工具 v4.7</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -1118,7 +1118,14 @@ kbd { background:var(--card); border:1px solid var(--border); border-radius:4px;
 #claudePanel {
   flex: 1;
   overflow-y: auto;
+  padding: 24px 28px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
   background: var(--bg);
+}
+#claudePanel.active {
+  display: flex;
 }
 
 
@@ -1225,13 +1232,13 @@ kbd { background:var(--card); border:1px solid var(--border); border-radius:4px;
     <button class="hdr-btn" onclick="openModal('limitPage')">⚠️ AI 審核限制</button>
     <button class="hdr-btn" onclick="showHistory()" title="最近審核記錄">📋 審核記錄</button>
     <button class="hdr-btn" onclick="copyShareUrl()" title="複製工具網址">🔗 分享工具</button>
-    <span class="version-tag">v4.6 · IFP QC</span>
+    <span class="version-tag">v4.7 · IFP QC</span>
   </div>
 </header>
 
 <div class="main-layout">
 
-  <!-- SIDEBAR -->
+  <!-- ── SIDEBAR（共用：專案資訊 + 類型選擇）── -->
   <aside class="sidebar">
 
     <div class="sidebar-section">
@@ -1258,7 +1265,7 @@ kbd { background:var(--card); border:1px solid var(--border); border-radius:4px;
     <div class="sidebar-section">
       <div class="sidebar-label">報告類別提示 <span style="font-weight:400;opacity:.7">（選填）</span></div>
       <div style="font-size:10px;color:var(--muted);line-height:1.5;margin-bottom:6px;">
-        AI 會自動從報告內容判斷類型。選填此欄可讓 AI 更快定位判定重點。
+        AI 會自動從報告內容判斷類型，選填此欄可讓 AI 更快定位判定重點。
       </div>
       <div class="type-groups" id="typeGroups">
 
@@ -1273,174 +1280,33 @@ kbd { background:var(--card); border:1px solid var(--border); border-radius:4px;
         </div>
 
         <div class="type-group-label">🛡️ EMC 電磁相容</div>
-        <button class="type-item" data-type="EMI" onclick="selectType(this)">
-          <span class="ti-icon">📡</span>
-          <div class="ti-info">
-            <span class="ti-name">EMI 電磁騷擾</span>
-            <span class="ti-std">EN 55032 Class B / 輻射+傳導</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="EMS" onclick="selectType(this)">
-          <span class="ti-icon">🔰</span>
-          <div class="ti-info">
-            <span class="ti-name">EMS 電磁抗擾度</span>
-            <span class="ti-std">EN 55035 / ESD / Surge / EFT</span>
-          </div>
-        </button>
+        <button class="type-item" data-type="EMI" onclick="selectType(this)"><span class="ti-icon">📡</span><div class="ti-info"><span class="ti-name">EMI 電磁騷擾</span><span class="ti-std">EN 55032 Class B / 輻射+傳導</span></div></button>
+        <button class="type-item" data-type="EMS" onclick="selectType(this)"><span class="ti-icon">🔰</span><div class="ti-info"><span class="ti-name">EMS 電磁抗擾度</span><span class="ti-std">EN 55035 / ESD / Surge / EFT</span></div></button>
 
         <div class="type-group-label">⚡ 電氣性能</div>
-        <button class="type-item" data-type="ELEC" onclick="selectType(this)">
-          <span class="ti-icon">🔬</span>
-          <div class="ti-info">
-            <span class="ti-name">電氣性能測試</span>
-            <span class="ti-std">屏時序 / 音頻 / VBO 眼圖 / 時鐘數據</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="VOLTAGE_RIPPLE" onclick="selectType(this)">
-          <span class="ti-icon">〰️</span>
-          <div class="ti-info">
-            <span class="ti-name">電壓與紋波測試</span>
-            <span class="ti-std">各電源軌電壓準確度 / Ripple Vpp</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="DERATING" onclick="selectType(this)">
-          <span class="ti-icon">📉</span>
-          <div class="ti-info">
-            <span class="ti-name">元件降額測試</span>
-            <span class="ti-std">Derating Analysis / 應力分析</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="CRYSTAL" onclick="selectType(this)">
-          <span class="ti-icon">💎</span>
-          <div class="ti-info">
-            <span class="ti-name">晶振頻偏測試</span>
-            <span class="ti-std">Crystal Frequency Deviation / ppm</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="PWR_TIMING" onclick="selectType(this)">
-          <span class="ti-icon">⏱️</span>
-          <div class="ti-info">
-            <span class="ti-name">電源時序測試</span>
-            <span class="ti-std">Power Sequence / 上電下電順序</span>
-          </div>
-        </button>
+        <button class="type-item" data-type="ELEC" onclick="selectType(this)"><span class="ti-icon">🔬</span><div class="ti-info"><span class="ti-name">電氣性能測試</span><span class="ti-std">屏時序 / 音頻 / VBO 眼圖 / 時鐘數據</span></div></button>
+        <button class="type-item" data-type="VOLTAGE_RIPPLE" onclick="selectType(this)"><span class="ti-icon">〰️</span><div class="ti-info"><span class="ti-name">電壓與紋波測試</span><span class="ti-std">各電源軌電壓準確度 / Ripple Vpp</span></div></button>
+        <button class="type-item" data-type="DERATING" onclick="selectType(this)"><span class="ti-icon">📉</span><div class="ti-info"><span class="ti-name">元件降額測試</span><span class="ti-std">Derating Analysis / 應力分析</span></div></button>
+        <button class="type-item" data-type="CRYSTAL" onclick="selectType(this)"><span class="ti-icon">💎</span><div class="ti-info"><span class="ti-name">晶振頻偏測試</span><span class="ti-std">Crystal Frequency Deviation / ppm</span></div></button>
+        <button class="type-item" data-type="PWR_TIMING" onclick="selectType(this)"><span class="ti-icon">⏱️</span><div class="ti-info"><span class="ti-name">電源時序測試</span><span class="ti-std">Power Sequence / 上電下電順序</span></div></button>
 
         <div class="type-group-label">🔌 訊號完整性</div>
-        <button class="type-item" data-type="USB2_HUB" onclick="selectType(this)">
-          <span class="ti-icon">🔵</span>
-          <div class="ti-info">
-            <span class="ti-name">USB 2.0 Hub 訊號測試</span>
-            <span class="ti-std">眼圖 Mask / 差分電壓 / 上升時間</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="USB2_DEVICE" onclick="selectType(this)">
-          <span class="ti-icon">🔵</span>
-          <div class="ti-info">
-            <span class="ti-name">USB 2.0 Device 訊號測試</span>
-            <span class="ti-std">Peripheral / Device 模式</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="USB3_HOST" onclick="selectType(this)">
-          <span class="ti-icon">🟣</span>
-          <div class="ti-info">
-            <span class="ti-name">USB 3.x SuperSpeed 訊號測試</span>
-            <span class="ti-std">LFPS / 5G 眼圖 / TJ / DJ</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="DIFF_IMPEDANCE" onclick="selectType(this)">
-          <span class="ti-icon">📐</span>
-          <div class="ti-info">
-            <span class="ti-name">差分阻抗測試</span>
-            <span class="ti-std">HDMI / DP / USB TDR 阻抗量測</span>
-          </div>
-        </button>
+        <button class="type-item" data-type="USB2_HUB" onclick="selectType(this)"><span class="ti-icon">🔵</span><div class="ti-info"><span class="ti-name">USB 2.0 Hub 訊號測試</span><span class="ti-std">眼圖 Mask / 差分電壓 / 上升時間</span></div></button>
+        <button class="type-item" data-type="USB2_DEVICE" onclick="selectType(this)"><span class="ti-icon">🔵</span><div class="ti-info"><span class="ti-name">USB 2.0 Device 訊號測試</span><span class="ti-std">Peripheral / Device 模式</span></div></button>
+        <button class="type-item" data-type="USB3_HOST" onclick="selectType(this)"><span class="ti-icon">🟣</span><div class="ti-info"><span class="ti-name">USB 3.x SuperSpeed 訊號測試</span><span class="ti-std">LFPS / 5G 眼圖 / TJ / DJ</span></div></button>
+        <button class="type-item" data-type="DIFF_IMPEDANCE" onclick="selectType(this)"><span class="ti-icon">📐</span><div class="ti-info"><span class="ti-name">差分阻抗測試</span><span class="ti-std">HDMI / DP / USB TDR 阻抗量測</span></div></button>
 
         <div class="type-group-label">🔬 可靠性 / 安規</div>
-        <button class="type-item" data-type="RELIABILITY_CVTE" onclick="selectType(this)">
-          <span class="ti-icon">🔄</span>
-          <div class="ti-info">
-            <span class="ti-name">可靠性試驗</span>
-            <span class="ti-std">機械 / 氣候 / 電源 / 壽命試驗</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="TEMP_RISE" onclick="selectType(this)">
-          <span class="ti-icon">🌡️</span>
-          <div class="ti-info">
-            <span class="ti-name">溫升試驗</span>
-            <span class="ti-std">元件 Tc / 可觸及表面 / IEC 62368-1</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="SAFETY_IEC62368" onclick="selectType(this)">
-          <span class="ti-icon">🛡️</span>
-          <div class="ti-info">
-            <span class="ti-name">IEC 62368-1 安規測試</span>
-            <span class="ti-std">接觸電流 / LPS / 介電強度 / 絕緣電阻</span>
-          </div>
-        </button>
+        <button class="type-item" data-type="RELIABILITY_CVTE" onclick="selectType(this)"><span class="ti-icon">🔄</span><div class="ti-info"><span class="ti-name">可靠性試驗</span><span class="ti-std">機械 / 氣候 / 電源 / 壽命試驗</span></div></button>
+        <button class="type-item" data-type="TEMP_RISE" onclick="selectType(this)"><span class="ti-icon">🌡️</span><div class="ti-info"><span class="ti-name">溫升試驗</span><span class="ti-std">元件 Tc / 可觸及表面 / IEC 62368-1</span></div></button>
+        <button class="type-item" data-type="SAFETY_IEC62368" onclick="selectType(this)"><span class="ti-icon">🛡️</span><div class="ti-info"><span class="ti-name">IEC 62368-1 安規測試</span><span class="ti-std">接觸電流 / LPS / 介電強度 / 絕緣電阻</span></div></button>
 
         <div class="type-group-label">📊 能效 / 無線 / 軟體</div>
-        <button class="type-item" data-type="ENERGY_EFFICIENCY" onclick="selectType(this)">
-          <span class="ti-icon">💡</span>
-          <div class="ti-info">
-            <span class="ti-name">能效測試</span>
-            <span class="ti-std">EU 2019/2021 / 待機 / 關機功耗</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="OTA_WIRELESS" onclick="selectType(this)">
-          <span class="ti-icon">📡</span>
-          <div class="ti-info">
-            <span class="ti-name">OTA 無線性能測試</span>
-            <span class="ti-std">WiFi / BT TRP / TIS / CTIA</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="SOFTWARE_FUNCTIONAL" onclick="selectType(this)">
-          <span class="ti-icon">🖥️</span>
-          <div class="ti-info">
-            <span class="ti-name">整機軟體功能測試</span>
-            <span class="ti-std">各模組 Pass/Fail/TBD 判定</span>
-          </div>
-        </button>
-        <button class="type-item" data-type="OTHER" onclick="selectType(this)">
-          <span class="ti-icon">🗂️</span>
-          <div class="ti-info">
-            <span class="ti-name">其他 / 自動識別</span>
-            <span class="ti-std">未知類型，AI 自行判斷</span>
-          </div>
-        </button>
+        <button class="type-item" data-type="ENERGY_EFFICIENCY" onclick="selectType(this)"><span class="ti-icon">💡</span><div class="ti-info"><span class="ti-name">能效測試</span><span class="ti-std">EU 2019/2021 / 待機 / 關機功耗</span></div></button>
+        <button class="type-item" data-type="OTA_WIRELESS" onclick="selectType(this)"><span class="ti-icon">📡</span><div class="ti-info"><span class="ti-name">OTA 無線性能測試</span><span class="ti-std">WiFi / BT TRP / TIS / CTIA</span></div></button>
+        <button class="type-item" data-type="SOFTWARE_FUNCTIONAL" onclick="selectType(this)"><span class="ti-icon">🖥️</span><div class="ti-info"><span class="ti-name">整機軟體功能測試</span><span class="ti-std">各模組 Pass/Fail/TBD 判定</span></div></button>
+        <button class="type-item" data-type="OTHER" onclick="selectType(this)"><span class="ti-icon">🗂️</span><div class="ti-info"><span class="ti-name">其他 / 自動識別</span><span class="ti-std">未知類型，AI 自行判斷</span></div></button>
 
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-label">上傳報告</div>
-      <div id="uploadZone" tabindex="0" role="button" aria-label="上傳 PDF 測試報告" class="upload-zone">
-        <input type="file" id="fileInput" accept=".pdf" onchange="handleFile(event)">
-        <div class="upload-icon">📂</div>
-        <div class="upload-text">點擊或拖曳上傳 PDF</div>
-        <div class="upload-sub">任何供應商格式均支援</div>
-      </div>
-      <div id="fileInfo" style="display:none" class="file-selected">
-        <span>📄</span>
-        <span class="fname" id="fileName"></span>
-        <button class="file-clear" onclick="clearFile()">✕</button>
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-label">分析選項</div>
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <span class="toggle-title">🌐 網路標準比對</span>
-          <span class="toggle-desc">搜尋 IFP/顯示器公開規範輔助判定</span>
-        </div>
-        <div class="toggle-switch on" id="webToggle" onclick="toggleWeb()"></div>
-      </div>
-      <div class="toggle-row">
-        <div class="toggle-info">
-          <span class="toggle-title">🔍 詳細逐項分析</span>
-          <span class="toggle-desc">詳細模式（每項列出實測值、規格、裕量）</span>
-        </div>
-        <div class="toggle-switch on" id="detailToggle" onclick="toggleDetail()"></div>
       </div>
     </div>
 
@@ -1458,156 +1324,155 @@ kbd { background:var(--card); border:1px solid var(--border); border-radius:4px;
       </details>
     </div>
 
-    <div class="sidebar-section" id="analyzeBtnSection">
+  </aside>
+
+  <!-- ══════════════════════════════════════════
+       自動審核模式面板
+  ══════════════════════════════════════════ -->
+  <main class="main-panel" id="panelAuto">
+
+    <!-- 上傳區 -->
+    <div class="panel-section">
+      <div class="panel-section-title">📂 上傳測試報告</div>
+      <div id="uploadZone" tabindex="0" role="button" aria-label="上傳 PDF 測試報告" class="upload-zone">
+        <input type="file" id="fileInput" accept=".pdf" onchange="handleFile(event)">
+        <div class="upload-icon">📂</div>
+        <div class="upload-text">點擊或拖曳上傳 PDF</div>
+        <div class="upload-sub">任何供應商格式均支援</div>
+      </div>
+      <div id="fileInfo" style="display:none" class="file-selected">
+        <span>📄</span>
+        <span class="fname" id="fileName"></span>
+        <button class="file-clear" onclick="clearFile()">✕</button>
+      </div>
+    </div>
+
+    <!-- 分析選項 + 開始審核 -->
+    <div class="panel-section panel-options-row">
+      <div class="options-group">
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-title">🌐 網路標準比對</span>
+            <span class="toggle-desc">搜尋 IFP/顯示器公開規範輔助判定</span>
+          </div>
+          <div class="toggle-switch on" id="webToggle" onclick="toggleWeb()"></div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-title">🔍 詳細逐項分析</span>
+            <span class="toggle-desc">詳細模式（每項列出實測值、規格、裕量）</span>
+          </div>
+          <div class="toggle-switch on" id="detailToggle" onclick="toggleDetail()"></div>
+        </div>
+      </div>
       <button class="analyze-btn" id="analyzeBtn" onclick="startAnalysis()" disabled>
         ▶ 開始自動審核
       </button>
     </div>
 
-  </aside>
-
-  <!-- MAIN PANEL -->
-  <main class="main-panel" id="mainPanel">
-
-    <!-- idle -->
-    <div class="idle-state" id="idleState">
-      <div style="font-size:40px">🔬</div>
-      <div class="idle-title">上傳測試報告，AI 自動審核</div>
-      <div style="font-size:12px;color:var(--muted);text-align:center;max-width:380px;line-height:1.7">
-        直接上傳供應商給的任何測試報告 PDF<br>
-        AI 自動讀取每個測項的規格與結果，逐項判定是否通過
-      </div>
-      <div class="idle-cards">
-        <div class="idle-card"><div class="ic">📡</div>EMI 電磁騷擾<br>EN 55032 Class B</div>
-        <div class="idle-card"><div class="ic">🔰</div>EMS 電磁抗擾<br>EN 55035 等級判定</div>
-        <div class="idle-card"><div class="ic">🔬</div>電氣性能<br>屏時序 / 音頻 / 眼圖</div>
-        <div class="idle-card"><div class="ic">〰️</div>電壓紋波<br>各軌電壓 / Ripple</div>
-        <div class="idle-card"><div class="ic">📉</div>元件降額<br>Derating Analysis</div>
-        <div class="idle-card"><div class="ic">💎</div>晶振頻偏<br>Crystal ppm 限值</div>
-        <div class="idle-card"><div class="ic">⏱️</div>電源時序<br>Power Sequence</div>
-        <div class="idle-card"><div class="ic">🔵</div>USB 2.0 Hub/Device<br>眼圖 Mask / 差分電壓</div>
-        <div class="idle-card"><div class="ic">🟣</div>USB 3.x SuperSpeed<br>LFPS / 5G 眼圖 / TJ</div>
-        <div class="idle-card"><div class="ic">📐</div>差分阻抗<br>HDMI / DP TDR</div>
-        <div class="idle-card"><div class="ic">🔄</div>可靠性試驗<br>機械 / 氣候 / 壽命</div>
-        <div class="idle-card"><div class="ic">🌡️</div>溫升試驗<br>元件 Tc / 可觸及表面</div>
-        <div class="idle-card"><div class="ic">🛡️</div>IEC 62368-1 安規<br>接觸電流 / 介電強度</div>
-        <div class="idle-card"><div class="ic">💡</div>能效測試<br>EU 2019/2021</div>
-        <div class="idle-card"><div class="ic">📡</div>OTA 無線<br>WiFi / BT TRP/TIS</div>
-        <div class="idle-card"><div class="ic">🖥️</div>軟體功能測試<br>Pass/Fail/TBD</div>
-        <div class="idle-card"><div class="ic">🗂️</div>其他類型<br>AI 自行識別規格</div>
-        <div class="idle-card" style="border-color:rgba(0,102,204,0.3);background:rgba(0,102,204,0.03)"><div class="ic">🔍</div><strong>AUTO 自動識別</strong><br>不確定類型選這個</div>
-      </div> </div>
-    </div><!-- /idleState -->
-
-    <!-- scanning -->
+    <!-- 進度條 -->
     <div class="scan-container" id="scanContainer">
       <div class="scan-header">
         <div class="scan-title">AI 分析中</div>
         <div class="scan-step" id="scanStep">正在初始化...</div>
         <button class="scan-cancel-btn" id="scanCancelBtn" onclick="cancelAnalysis()" style="display:none">✕ 取消</button>
       </div>
-
       <div class="scan-bar-wrap"><div class="scan-bar"></div></div>
-
-      <!-- 步驟清單 -->
       <div class="scan-steps">
-        <div class="scan-step-item" id="step-pdf">
-          <span class="step-icon">📄</span>
-          <span class="step-label">讀取並解析 PDF</span>
-          <span class="step-time" id="step-pdf-time"></span>
-        </div>
-        <div class="scan-step-item" id="step-model">
-          <span class="step-icon">🔍</span>
-          <span class="step-label">選擇 AI 模型</span>
-          <span class="step-time" id="step-model-time"></span>
-        </div>
-        <div class="scan-step-item" id="step-ai">
-          <span class="step-icon">🤖</span>
-          <span class="step-label">AI 審核報告中</span>
-          <span class="step-time" id="step-ai-time"></span>
-        </div>
-        <div class="scan-step-item" id="step-render">
-          <span class="step-icon">✅</span>
-          <span class="step-label">產生審核結果</span>
-          <span class="step-time" id="step-render-time"></span>
-        </div>
+        <div class="scan-step-item" id="step-pdf"><span class="step-icon">📄</span><span class="step-label">讀取並解析 PDF</span><span class="step-time" id="step-pdf-time"></span></div>
+        <div class="scan-step-item" id="step-model"><span class="step-icon">🔍</span><span class="step-label">選擇 AI 模型</span><span class="step-time" id="step-model-time"></span></div>
+        <div class="scan-step-item" id="step-ai"><span class="step-icon">🤖</span><span class="step-label">AI 審核報告中</span><span class="step-time" id="step-ai-time"></span></div>
+        <div class="scan-step-item" id="step-render"><span class="step-icon">✅</span><span class="step-label">產生審核結果</span><span class="step-time" id="step-render-time"></span></div>
       </div>
-
-      <!-- 詳細日誌 -->
-      <div class="scan-log-wrap">
-        <div class="scan-log" id="scanLog"></div>
-      </div>
+      <div class="scan-log-wrap"><div class="scan-log" id="scanLog"></div></div>
     </div>
 
-    <!-- error -->
+    <!-- 錯誤 -->
     <div class="error-box" id="errorBox"></div>
 
-    <!-- results area -->
+    <!-- 審核結果 -->
     <div id="resultsArea"></div>
-
 
   </main>
 
-<!-- Claude.ai 模式面板 -->
-    <div id="claudePanel" style="display:none">
-      <div class="claude-mode-wrap">
+  <!-- ══════════════════════════════════════════
+       Claude.ai 模式面板
+  ══════════════════════════════════════════ -->
+  <div class="main-panel claude-panel" id="panelClaude">
 
-        <!-- 說明區 -->
-        <div class="claude-mode-header">
-          <div class="cm-icon">🤖</div>
-          <div>
-            <div class="cm-title">Claude.ai 模式</div>
-            <div class="cm-sub">工具組合審核 Prompt → 開啟 Claude.ai → 貼上 PDF → 取得含 Download 按鈕的審核報告</div>
-            <div id="cmTypeReminder" style="display:none;margin-top:8px;padding:8px 12px;background:#fffbe6;border:1px solid #fde68a;border-radius:6px;font-size:12px;color:#92400e">
-              ⚠️ 目前選擇類型為 <strong id="cmCurrentType"></strong>，若不確定請選「AUTO 自動識別」
-            </div>
-          </div>
-        </div>
-
-        <!-- STEP 1+2：上傳後顯示 Prompt 和送出按鈕 -->
-        <div class="cm-section">
-          <div class="cm-section-title">Step 1 — 複製 Prompt 並開啟 Claude.ai</div>
-          <div id="claudePrepareMsg" class="cm-prepare-msg">
-            <div class="cm-prepare-icon">📂</div>
-            <div>請先在左側<strong>上傳測試報告 PDF</strong>，並選擇對應的<strong>審核類型</strong></div>
-          </div>
-          <div id="claudeSendArea" style="display:none">
-            <div class="cm-prompt-preview">
-              <div class="cm-prompt-label">審核 Prompt 預覽（自動複製到剪貼簿）：</div>
-              <div class="cm-prompt-box" id="claudePromptPreview"></div>
-            </div>
-            <button class="cm-send-btn" onclick="sendToClaudeAI()">
-              🚀 複製 Prompt 並開啟 Claude.ai
-            </button>
-            <div id="claudeCopiedHint" style="display:none;margin-top:12px;padding:16px 20px;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;">
-              <div style="font-size:14px;font-weight:700;color:#16a34a;margin-bottom:10px">✅ Prompt 已複製，Claude.ai 已開啟！</div>
-              <ol style="font-size:13px;color:#166534;line-height:2.2;padding-left:20px;margin:0">
-                <li>在 Claude.ai 按 <kbd style="background:#fff;border:1px solid #86efac;border-radius:4px;padding:1px 7px;font-family:monospace">Ctrl+V</kbd> 貼上 Prompt</li>
-                <li>把 <strong>PDF 報告</strong>直接拖曳到 Claude.ai 對話框上傳</li>
-                <li>送出，等待分析完成（約 30～60 秒）</li>
-                <li>Claude 回覆最後會自動附上 <strong>📄 可下載的 HTML 報告</strong>，直接點擊下載即可</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-
-
-
-        <!-- 優點說明 -->
-        <div class="cm-advantage">
-          <div class="cm-adv-title">✅ 此模式的優點（相較自動審核模式）</div>
-          <div class="cm-adv-list">
-            <div class="cm-adv-item">📊 <strong>完整報告不截斷</strong> — 200K token context，不受免費 API 限制</div>
-            <div class="cm-adv-item">🖼️ <strong>可分析波形圖/眼圖</strong> — Claude 可直接看 PDF 中的圖片</div>
-            <div class="cm-adv-item">💬 <strong>可追問細節</strong> — 審核完可在 Claude.ai 繼續追問</div>
-            <div class="cm-adv-item">🆓 <strong>Claude.ai 訂閱即可使用</strong> — 不需要額外 API Key</div>
-          </div>
-        </div>
-
+    <!-- 上傳區（Claude 模式用） -->
+    <div class="panel-section">
+      <div class="panel-section-title">📂 上傳測試報告</div>
+      <div id="claudeUploadZone" tabindex="0" role="button" aria-label="上傳 PDF 測試報告（Claude 模式）" class="upload-zone" onclick="document.getElementById('claudeFileInput').click()">
+        <input type="file" id="claudeFileInput" accept=".pdf" onchange="handleClaudeFile(event)" style="display:none">
+        <div class="upload-icon">📂</div>
+        <div class="upload-text">點擊或拖曳上傳 PDF</div>
+        <div class="upload-sub">任何供應商格式均支援</div>
+      </div>
+      <div id="claudeFileInfo" style="display:none" class="file-selected">
+        <span>📄</span>
+        <span class="fname" id="claudeFileName"></span>
+        <button class="file-clear" onclick="clearClaudeFile()">✕</button>
       </div>
     </div>
 
+    <!-- Claude 說明 + 送出 -->
+    <div class="cm-header-row">
+      <div class="cm-icon">🤖</div>
+      <div>
+        <div class="cm-title">Claude.ai 模式</div>
+        <div class="cm-sub">工具組合審核 Prompt → 開啟 Claude.ai → 上傳 PDF → Claude 自動產出含 Download 按鈕的審核報告</div>
+        <div id="cmTypeReminder" style="display:none;margin-top:8px;padding:8px 12px;background:#fffbe6;border:1px solid #fde68a;border-radius:6px;font-size:12px;color:#92400e">
+          ⚠️ 目前選擇類型為 <strong id="cmCurrentType"></strong>，若不確定請選「AUTO 自動識別」
+        </div>
+      </div>
+    </div>
+
+    <!-- cm-section Step 1 -->
+    <div class="panel-section">
+      <div class="panel-section-title">Step 1 — 複製 Prompt 並開啟 Claude.ai</div>
+      <div id="claudePrepareMsg" class="cm-prepare-msg">
+        <div class="cm-prepare-icon">📂</div>
+        <div>請先在上方<strong>上傳測試報告 PDF</strong>，工具就會自動組合最佳化的審核 Prompt</div>
+      </div>
+      <div id="claudeSendArea" style="display:none">
+        <div class="cm-prompt-preview">
+          <div class="cm-prompt-label">審核 Prompt 預覽（自動複製到剪貼簿）：</div>
+          <div class="cm-prompt-box" id="claudePromptPreview"></div>
+        </div>
+        <button class="cm-send-btn" onclick="sendToClaudeAI()">
+          🚀 複製 Prompt 並開啟 Claude.ai
+        </button>
+        <div id="claudeCopiedHint" style="display:none;margin-top:12px;padding:16px 20px;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;">
+          <div style="font-size:14px;font-weight:700;color:#16a34a;margin-bottom:10px">✅ Prompt 已複製，Claude.ai 已開啟！</div>
+          <ol style="font-size:13px;color:#166534;line-height:2.2;padding-left:20px;margin:0">
+            <li>在 Claude.ai 按 <kbd>Ctrl+V</kbd> 貼上 Prompt</li>
+            <li>把 <strong>PDF 報告</strong>直接拖曳到 Claude.ai 對話框上傳</li>
+            <li>送出，等待分析完成（約 30～60 秒）</li>
+            <li>Claude 回覆最後會自動附上 <strong>📄 可下載的 HTML 報告</strong>，直接點擊下載即可</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- 優點說明 -->
+    <div class="cm-advantage">
+      <div class="cm-adv-title">✅ 此模式的優點（相較自動審核模式）</div>
+      <div class="cm-adv-list">
+        <div class="cm-adv-item">📊 <strong>完整報告不截斷</strong> — 200K token context，不受免費 API 限制</div>
+        <div class="cm-adv-item">🖼️ <strong>可分析波形圖/眼圖</strong> — Claude 可直接看 PDF 中的圖片</div>
+        <div class="cm-adv-item">💬 <strong>可追問細節</strong> — 審核完可在 Claude.ai 繼續追問</div>
+        <div class="cm-adv-item">🆓 <strong>Claude.ai 訂閱即可使用</strong> — 不需要額外 API Key</div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /main-layout -->
+
+
 <script>
+
 
 
 
@@ -1619,17 +1484,26 @@ let selectedFile = null;
 let webSearch = true;
 let detailMode = true;
 let fileBase64 = null;
-let _analysisController = null;  // FIX10: 全域宣告，避免隱式全域
-let _coldTimer = null;           // FIX9: 全域宣告
+let _analysisController = null;
+let _coldTimer = null;
+let claudeFileBase64 = null;   // Claude 模式的 PDF
+let claudeSelectedFile = null; // Claude 模式的檔案
 
 window.addEventListener('load', () => {
   updateAnalyzeBtn();
+  // 設定預設後端 URL
   const savedUrl = localStorage.getItem('ifp_backend_url');
+  window.IFP_BACKEND_URL = savedUrl || 'https://ifp-review-backend.onrender.com';
   if (savedUrl) {
-    window.IFP_BACKEND_URL = savedUrl;
     const inp = document.getElementById('backendUrlInput');
     if (inp) inp.value = savedUrl;
   }
+  // 初始：自動模式顯示，Claude 模式隱藏
+  const pa = document.getElementById('panelAuto');
+  const pc = document.getElementById('panelClaude');
+  if (pa) pa.style.display = 'flex';
+  if (pc) pc.style.display = 'none';
+
   // 恢復上次設定
   const saved = JSON.parse(localStorage.getItem('ifp_settings') || '{}');
   if (saved.stage)    { const el = document.getElementById('stage');    if (el) el.value = saved.stage; }
@@ -1639,6 +1513,21 @@ window.addEventListener('load', () => {
     const btn = document.querySelector(`[data-type="${saved.type}"]`);
     if (btn) selectType(btn);
   }
+  // Claude 上傳區 drag & drop
+  var cuz = document.getElementById('claudeUploadZone');
+  if (cuz) {
+    cuz.addEventListener('dragover', function(e) { e.preventDefault(); cuz.classList.add('drag-over'); });
+    cuz.addEventListener('dragleave', function() { cuz.classList.remove('drag-over'); });
+    cuz.addEventListener('drop', function(e) {
+      e.preventDefault(); cuz.classList.remove('drag-over');
+      var f = e.dataTransfer.files[0];
+      if (f && f.type === 'application/pdf') handleClaudeFile({ target: { files: [f] } });
+    });
+    cuz.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); document.getElementById('claudeFileInput').click(); }
+    });
+  }
+
 });
 
 function updateAnalyzeBtn() {
@@ -1722,7 +1611,6 @@ function clearFile() {
   window._autoReviewRaw = null;
   window._lastRawText   = null;
   document.getElementById('errorBox').style.display = 'none';
-  document.getElementById('idleState').style.display = 'flex';
   document.getElementById('scanContainer').classList.remove('active');
 }
 
@@ -1816,9 +1704,53 @@ function buildPrompt() {
   const reviewer    = document.getElementById('reviewer').value || '（未填寫）';
   const deviceModel = document.getElementById('deviceModel')?.value?.trim() || '';
 
+  // 通用審核checklist：不管哪個類型，這五個維度一律要檢查
+  // 這段是為了修正過去只套用單一類型規則、卻漏掉跨類型共通問題的缺陷
+  const UNIVERSAL_CHECKLIST = `## 通用審核原則（無論何種報告類型，以下五點一律檢查，找不到就明講找不到）
+
+### 1. 測試目的與工況涵蓋率
+- 報告是否說明「為何選這個測試模式/工況」？
+- 若整機有多種工作模式（不同解析度、不同負載組合），報告只測了其中幾種 → WARN，備註「未涵蓋所有工況，無法排除其他模式下不合格的可能」
+- 尤其留意：報告是否選了「最惡劣工況」（最高負載、最高頻率、滿載周邊）作為代表性測試點，若明顯挑了較輕鬆的工況 → WARN
+
+### 2. 測試條件記錄完整度
+- 環境溫濕度：是否記錄「實際測試當下數值」，而非只寫允許範圍（如「15~35℃」）？只寫範圍不寫實測值 → WARN
+- 測試時長：涉及穩態溫度/長時間老化的測試，是否明確記錄測試時長？未記錄 → WARN，備註「無法確認是否達穩態」
+- 量測儀器：型號、校正日期/證書編號是否齊全？缺 → WARN
+- 標準版本年份：報告引用的標準（如EN55032、IEC62368-1）是否標明版本/年份？只寫標準編號沒寫年份 → WARN，備註「無法確認引用版本是否為現行有效版」
+
+### 3. 報告自證完整度（能否只靠這份報告驗證判定，不依賴外部文件）
+- 若判定依據寫「與PRD一致」「與需求一致」「與規格書一致」等外部依賴文字，但報告本身未附上PRD/規格書的具體數值 → WARN，備註「判定依據為外部文件，本報告未內含可驗證數值」
+- 若報告只有「測試結果：PASS」的結論頁、沒有任何支撐計算數據或量測記錄 → WARN，備註「僅有結論、無支撐數據，視為供應商片面聲明，無法獨立驗證」
+- 摘要表結論與內頁詳細數據是否對得起來？摘要說FAIL但內頁找不到對應的超標數據（或反之）→ WARN，備註「摘要與內頁數據無法對應，報告完整度不足，建議要求補件」
+
+### 4. 判定標準本身的合理性
+- 同一參數若同時出現「器件規格限值」與「法規/標準限值」兩種門檻，且兩者不一致，要指出並提醒：判定應以較嚴格者為準
+- 若某測項判定標準寫得比其他相似測項明顯寬鬆（例如同一份報告裡，訊號線判C級但電源線判B級），標註出來讓人工複核合理性，不要自己斷定對錯
+
+### 5. 法規符合性與根因歸類
+- 標註這份報告對應的標準是否為「強制性法規」（如EMC指令、安規指令、能效指令、電信法規）還是「企業自訂/產業慣例規範」（如降額標準、可靠性試驗規範），兩者風險等級不同
+- 若FAIL項目的備註描述指向特定根因（如「跌落後陰陽屏」通常是包裝緩衝或結構問題、「閃屏但自動恢復」通常是軟體EMI防護設計問題），可以在說明裡點出可能的根因方向，但要註明這是初步研判，需RD進一步確認，不要武斷下結論
+
+### 6. 文件管制與邏輯自洽性（新增，務必檢查）
+- **測試原因匹配測試範圍（適用所有類型，非EMI專屬）**：先找出報告的「測試原因/Test Reason/Test Mode」欄位。若寫「MP」「換料」「Material Change」「供應商變更」「XX Change」等字樣，代表這是針對特定變更的局部復測，此時只測跟該次變更直接相關的節點/項目是合理工程判斷，**不可**因為其他項目標示「/」或未測就判定報告不完整——但仍要合理性檢查：變更的料件若不涉及電源迴路，卻只測了電源相關項目、遺漏該料件直接關聯的項目（如訊號完整性），才需要WARN。反之，若「測試原因」欄位寫「EVT」「DVT」等代表應為全項目驗證的階段，卻有多項標示「/」或未測 → WARN，備註「測試原因為[EVT/DVT]階段完整驗證，但部分測項未測，需確認範圍縮減依據」
+- **FAIL/NG項目必須有原始數據佐證**：若封面或總表判定某項為FAIL/NG，內頁找不到對應的詳細量測數據、頻點、波形或數值 → 直接判 CONTRADICTION，備註「判定FAIL但缺少對應原始數據佐證，無法定位問題根因，報告完整度不合格」
+- **日期/版本邏輯自洽性**：比對報告的「測試時間/測試日期」與報告內文提到的「軟體版本」「韌體版本」「主程式版本」——若軟體版本字串包含建置日期（如版本號格式為YYYYMMDD_xxxxxx），且該建置日期晚於報告記載的測試完成日期 → CONTRADICTION，備註「軟體版本建置日期晚於報告測試日期，邏輯上不可能用尚未建置的版本進行測試，請確認是報告日期填錯或版本欄位填錯」
+- **報告編號重複使用**：若能從上下文（檔名、標題）判斷這份報告的「報告編號」與其他階段（如EVT/DVT）報告編號相同 → WARN，備註「報告編號疑似跨階段重複使用，可能造成文件追溯錯亂，建議確認編號管理規範」
+- **版本迭代缺乏修訂說明**：若報告本身標示版號（如V1、V1.1、Rev.2、"1a"等）非首版，但找不到任何「本版異動內容」「Revision History」說明 → WARN，備註「版號顯示非首次發行，但無修訂履歷說明，無法得知本版與前版差異」
+- **開區間規格（Min/Max其中一邊為"/"）的正確解讀**：規格欄位若Min或Max其中一格是「/」，代表「此邊界無限制/未定義」，不能理解成數值0或無效——判斷時只用有值的那一邊界比對，並在說明中明確標註「該規格為開區間，僅單邊限制，若後續實測值持續往無限制方向偏移，建議留意是否該補上限值」
+### 重要：分析深度界線
+- 你不是拿著法規/標準原文逐條核對，是依報告內容本身的邏輯一致性去判斷。若遇到「這份報告是否符合某法規的細節分類」而你無法從報告內容本身確認（如標準條文的細部分類表），要明講「無法從本報告內容確認，建議查閱標準原文或請教法規/品保部門」，不要假裝確定。
+`;
+
   const typeSpecificRules = {
 
     EMI: `## EMI 電磁騷擾審核規則（EN 55032 Class B）
+
+### 報告完整度前置檢查
+- 若封面/總表判定某頻段（如「輻射Above 1G」）為FAIL，內頁必須要有對應的詳細頻點數據表（頻率/實測值/限值/Margin）。若只有結論沒有內頁數據支撐 → 直接判 CONTRADICTION（而非WARN），備註「摘要判定FAIL但缺少對應頻段的詳細數據，無法確認超標頻點與嚴重程度，建議要求供應商補件」
+- 測試模式是否涵蓋整機最惡劣工況（最高解析度+最高更新率+滿載周邊同時）？若明顯只測了較輕鬆的工況組合 → WARN
+- **測試原因匹配測試範圍**：參見通用審核原則第6點；EMI報告常見情境是「測試原因=MP(換料)」時，只測輻射/傳導其中一項而其他標「/」，屬合理局部復測，不算缺項
 
 ### 輻射騷擾（RE）限值
 - 30～230 MHz：QP ≤ 40 dBµV/m
@@ -1835,25 +1767,95 @@ function buildPrompt() {
 ### 矛盾偵測
 封面 PASS 但任何頻點 Margin ≤ 0 → CONTRADICTION`,
 
-    EMS: `## EMS 電磁抗擾度審核規則（EN 55035）
+    EMS: `## EMS 電磁抗擾度審核規則（EN 55035 / IEC 61000-4 系列）
 
-### 等級定義
-- A：試驗期間完全正常
-- B：試驗期間輕微降低，結束後自動恢復（短暫閃屏屬 B 級，不算 FAIL）
-- C：需手動恢復（重啟）
+### 零、報告完整度前置檢查（優先於逐項判讀，務必先做這一步）
+- 若整份報告只提供「判定等級說明」（A/B/C/D級的文字定義），**卻找不到任何逐項的實際測試結果表**（如ESD/EFT/Surge/CS/Dips各自對應的骚扰端口、骚扰强度、測試結果、判定要求欄位數據）→ 直接判 WARN，不論封面寫什麼結論，備註：「本報告僅提供判定等級的文字定義，未列出各項干擾測試的實際套用等級與結果明細，無法驗證EMS測試是否真的執行、結果是否合格，屬於報告完整度不足」
+- 這個缺口若同時出現在同一產品的EVT與DVT兩階段報告中，額外備註：「此缺口在EVT與DVT報告中重複出現，屬系統性模板問題，建議要求供應商統一補充報告模板」
+- 只有在報告確實有逐項結果數據表時，才進入下方一至七節的詳細判讀
+
+### 一、等級定義
+- A：試驗期間完全正常，無任何降級
+- B：試驗期間輕微降級（如閃屏），試驗後自動恢復，無需人工介入（閃屏 = B 級，不算 FAIL）
+- C：試驗後需手動恢復（重啟）
 - D：無法恢復（硬體損壞）
 
-### 各項要求等級
-| 測試項目 | 要求等級 | PASS 條件 |
-|---------|---------|----------|
-| ESD（IEC 61000-4-2）| B | A 或 B |
-| RS 輻射抗擾（IEC 61000-4-3）| A | 僅 A |
-| EFT（IEC 61000-4-4）| B | A 或 B |
-| Surge（IEC 61000-4-5）| B | A 或 B |
-| CS 傳導抗擾（IEC 61000-4-6）| A | 僅 A |
-| Dips 100%×5000ms（IEC 61000-4-11）| C | A/B/C |`,
+**重要判讀提醒**：報告裡的備註文字若寫「測試中會閃屏，但能自動恢復」「閃屏後自行恢復」等描述，這是對B級現象的具體說明，**不是異常紀錄**。只要該測項的「判定要求」欄位本來就是B級（或更寬鬆），且「測試結果」欄位確實落在B級或更好，就是正常PASS，不可因為看到「閃屏」「異常」等字面上聽起來負面的詞就自行降判WARN或FAIL——務必先看判定要求欄位，再判斷測試結果是否達到該要求，不要只看敘述文字的字面情緒。
+
+### 二、各測試項目要求等級
+| 測試項目 | 標準 | 最低要求等級 | PASS 條件 |
+|---------|------|-----------|---------|
+| ESD 靜電放電（IEC 61000-4-2）| EN 55035 | B | A 或 B |
+| RS 輻射抗擾（IEC 61000-4-3）| EN 55035 | A | 僅 A |
+| EFT 電快速瞬變（IEC 61000-4-4）| EN 55035 | B | A 或 B |
+| Surge 浪涌（IEC 61000-4-5）| EN 55035 | B | A 或 B |
+| CS 傳導抗擾（IEC 61000-4-6）| EN 55035 | A | 僅 A |
+| Dips 電壓跌落（IEC 61000-4-11）| EN 55035 | C | A/B/C |
+
+標記「/」= 本次未測試，需確認是否為合理豁免，無說明 → WARN
+
+### 三、ESD 測試電壓等級核查（IEC 61000-4-2）
+
+標準定義的合法測試等級：
+- 接觸放電：2 kV / 4 kV / 6 kV / 8 kV
+- 空氣放電：2 kV / 4 kV / 8 kV / 15 kV
+
+非標準等級偵測（→ WARN）：
+- 出現 5 kV 接觸放電 → 非標準等級，需說明依據（疑誤植 6 kV，或公司自訂規格）
+- 出現 10 kV 空氣放電 → 非標準等級，需說明依據（疑誤植 15 kV）
+- 無任何說明文字 → WARN，備註「測試電壓非 IEC 61000-4-2 標準等級，需補充依據」
+
+最高應力等級缺漏（→ WARN）：
+- 接觸放電 8 kV 標「/」（未測）且封面 PASS → WARN
+- 空氣放電 15 kV 標「/」（未測）且封面 PASS → WARN
+- 兩者同時缺漏 → WARN 加重，備註「最高應力等級均未測，MP 變更驗證不完整，不建議作為量產放行唯一依據」
+
+### 四、測試過程資訊完整性核查
+
+依 IEC 61000-4-2 標準，完整 ESD 報告應包含以下項目：
+
+| 項目 | 缺漏判定 |
+|-----|---------|
+| 每測試點每極性放電次數（標準要求每極性 ≥ 10 次）| WARN |
+| ESD 發生器型號與校正證書編號 | WARN |
+| 測試配置圖（HCP/VCP 擺放、接地方式、纜線佈局）| WARN |
+| 間接放電測試記錄（對 HCP/VCP 放電，IEC 61000-4-2 完整測項之一）| WARN |
+
+上述四項全部缺漏 → 整體備註「本報告僅為結果表，缺乏測試過程資訊，第三方無法覆核可重現性」
+
+### 五、數據一致性核查
+
+若所有測試點（不同介面：USB / HDMI / Type-C / SPDIF / AC 電源 / 縫隙等）結果完全一致（全部同一等級）：
+→ WARN，備註「不同介面 ESD 耦合機制不同，全部結果完全一致有複製貼上疑慮，建議要求原始測試記錄（raw log）」
+
+### 六、MP 變更驗證報告追加審查
+
+報告原因含「MP」「換料」「供應商變更」等字樣時，額外核查：
+
+1. 未引用變更影響評估文件編號 → WARN，備註「未說明變更影響評估依據，無法確認測試範圍縮減合理性」
+2. eMMC / 記憶體類儲存換料，僅重測 ESD，其餘（RS/EFT/Surge/CS/Dips）全標「/」→ WARN
+   備註「eMMC 為內埋元件，需說明為何換料影響 ESD 而非其他項目，建議引用變更矩陣文件」
+3. 若測試範圍縮減有說明文件依據，且環境條件合規（15~35°C，30~60% RH）→ 可接受，不升 WARN
+
+### 七、整體判定邏輯
+
+PASS：所有已測項目達要求等級，測試電壓為標準等級，測試範圍完整
+WARN：任一下列情況 ——
+  - 測試電壓含非標準等級且無說明（5 kV / 10 kV 等）
+  - 最高應力等級（8 kV 接觸 / 15 kV 空氣）未測
+  - 測試過程資訊嚴重缺漏（無 setup / 無校正 / 無放電次數）
+  - 所有測試點結果完全一致（可信度存疑）
+  - MP 變更報告未說明測試範圍縮減依據
+  - 報告未標明EN55035版本年份
+  - 同一份報告內不同測項的判定等級要求差異明顯（如訊號線判C級但電源線判B級），標註出來提醒複核，不自行斷定合理與否
+FAIL：任一已測項目結果為 C 或 D
+CONTRADICTION：封面 PASS，但內頁有任何測試點結果 C 或 D`,
 
     ELEC: `## 電氣性能測試審核規則（QR-DQC-HT-114，包含 6 個子模組）
+
+### 報告完整度前置檢查
+- 環境溫度若只寫允許範圍（如「15~35℃」）沒有實際測試當下數值 → WARN，備註「未記錄實際測試溫度，僅知落在允許範圍」
+- 若同一測項在不同階段（EVT/DVT）報告中，前一階段FAIL、後一階段變PASS，但沒有變更說明（ECN/設計變更記錄）→ WARN，備註「問題已於後續階段通過，但缺乏變更履歷文件，建議補充ECN以利品質追溯」
 
 ### 子模組一：屏時序測試（Panel Timing Test）
 | 參數 | MIN | MAX | FAIL 條件 |
@@ -1865,6 +1867,7 @@ function buildPrompt() {
 | T5 LOCKN 與 BLON 時延（開機）| 500 ms | — | < 500 ms |
 | T6 Backlight 與有效信號時延（關機）| 100 ms | — | < 100 ms |
 裕量 < 10%（距邊界）→ WARN
+T3 為負值時，說明可能的工程意義：Panel Vcc比有效信號更早消失（時序順序反了），可能造成關機瞬間顯示異常，非單純數值超標
 
 ### 子模組二：開關機時序（Power on/off Timing）
 各時序節點 T1/T2/T3：標準 > 100 ms，低於 → FAIL
@@ -1889,7 +1892,7 @@ function buildPrompt() {
 ### 子模組五：眼圖測試（VBO / eDP / LVDS）
 每個通道（RX0～RXn）標注 PASS/FAIL。
 所有通道 PASS → 整體 PASS；任一 FAIL → 整體 FAIL。
-（無波形數值，以報告截圖旁的 PASS/FAIL 標注為準）
+（無波形數值，以報告截圖旁的 PASS/FAIL 標注為準；若報告只有PASS/FAIL文字沒有眼開度等量化數值 → WARN，備註「僅有定性判定無量化數據，無法用於趨勢追蹤，建議留存原始眼圖數值」）
 
 ### 子模組六：時鐘數據測試（Clock and Data Test）
 | 狀態 | 規格 | FAIL |
@@ -1904,10 +1907,29 @@ function buildPrompt() {
 
 ### 紋波（Ripple Vpp）
 以報告中各節點規格限值為準，實測 > 限值 → FAIL；> 80% 限值 → WARN
-無明確限值時參考：12V ≤ 120mV、5V ≤ 50mV、3.3V ≤ 33mV、核心電壓 ≤ 20mV`,
+無明確限值時參考：12V ≤ 120mV、5V ≤ 50mV、3.3V ≤ 33mV、核心電壓 ≤ 20mV
+
+### 裕量百分比計算（務必逐節點計算，不能只看單一節點合格與否）
+- 裕量% = (規格限值 − 實測值) / 規格限值 × 100%
+- 報告若有多個電源節點（如UD1~UD8、UL、UV、UU、UM、UH、UT、UX等各組），逐一計算每個節點的裕量%，找出**裕量最小的節點**明確點名標註
+- 裕量% < 10% → WARN，即使判定欄寫OK也要標註，備註：「[節點名稱]裕量僅[X]%，是本報告所有節點中最緊繃的一個，量產BOM公差若有偏移風險最高，建議留意該迴路電容/濾波設計」
+- 例：規格上限1200mV、實測1100mV，裕量% = 100/1200 = 8.3%，即使判OK仍須標WARN並點名`,
 
     DERATING: `## 元件降額測試審核規則
 
+### 一、報告完整度前置檢查（優先於數值判斷）
+- 若整份報告只有「測試結果：PASS」一行結論，**沒有任何元件的 Irms/Isurge/Imax 相對額定值百分比計算表** → 直接判 WARN，不可判 PASS
+  備註：「本報告僅有結論、無降額計算數據支撐，視為供應商片面聲明，無法獨立驗證是否真的執行降額分析，建議要求補齊逐元件計算表」
+- 只有在報告確實附上逐元件的規格值/實測值/百分比計算表時，才進入下方數值判斷
+
+### 二、降額標準（有數據時才適用）
+
+**重要：許多供應商報告表頭會自訂兩級門檻——「Waste」＝硬性上限、「Warning」＝建議追蹤門檻，但報告本身的判定欄往往不管實際落在哪一級，統一寫「OK」。你必須自己重新計算每一筆數據落在哪一級，不可照抄報告寫的OK/PASS：**
+- 實測百分比 < Warning門檻 → PASS
+- 實測百分比介於 Warning門檻 與 Waste門檻之間 → **WARN**（備註：「實測佔比[X]%，已超過建議追蹤的Warning門檻[Y]%，雖未達硬性Waste上限[Z]%，屬於可靠度存疑的元件，報告判定欄寫OK但未區分此差異，建議標註追蹤，非阻斷放行」）
+- 實測百分比 ≥ Waste門檻 → FAIL，即使報告本身寫OK也要標CONTRADICTION
+
+一般性降額標準（若報告未自訂兩級門檻時的預設參考值）：
 | 元件類別 | 降額要求（< 為 FAIL）|
 |---------|---------|
 | 電阻（功率）| ≤ 額定 × 50% |
@@ -1915,7 +1937,48 @@ function buildPrompt() {
 | 電感（電流）| ≤ 額定 × 80% |
 | 二極體（電流）| ≤ 額定 × 75% |
 | MOSFET（電壓）| ≤ 額定 × 80% |
-降額率在規格上限 95%～100% → WARN`,
+降額率在規格上限 95%～100% → WARN
+
+### 三、以下 9 項務必逐條檢查並在結果中明確列出，不可省略（即使數值本身全部合格也要檢查）：
+
+**1. 測試溫度是否為最惡劣工況**
+- 找出報告裡「Ambient Temperature」或「Test Mode」段落記載的實際測試溫度（如「Office: 25°C」）
+- 同時找出報告備註裡是否寫了「溫度測試條件範圍」（如「25±5℃」代表允許20~30℃）
+- 若報告只在單一溫度點（如25°C）測試，而該產品規格書允許的工作溫度上限明顯更高（IFP互動白板類產品常見規格為0~40℃或-10~45℃，若報告本身沒提及產品規格上限，也要明講「未知產品實際工作溫度上限，無法確認25°C是否為最惡劣工況」）→ WARN，備註：「降額測試僅在單一溫度點驗證，未確認是否涵蓋產品最高工作溫度；電子元件額定值通常隨溫度升高而衰減，高溫下實際裕量可能低於本報告數字，建議確認是否需於規格上限溫度下複測」
+
+**2. Max Load（最大負載）定義是否涵蓋報告牽涉的所有子系統**
+- 找出報告裡「Max Load define」的描述（如「亮度/對比拉到最大、音量拉到額定功率」）
+- 對照報告測試的元件清單與檔名/型號（若檔名或型號提及特定介面，如EMMC、USB、HDMI、WiFi等），確認Max Load定義是否涵蓋這些介面的滿載狀態
+- 若Max Load定義只提到顯示/音訊負載，但報告測試的元件明顯屬於其他子系統（如儲存介面IC、USB控制器等）→ WARN，備註：「Max Load定義未明確涵蓋[該子系統]的滿載工況，測試條件與受測元件所屬系統可能不匹配，建議確認該子系統是否已於最大負載下驗證」
+
+**3. 降額門檻本身的引用依據**
+- 報告裡的Requirement百分比門檻（如<80%、<90%、<95%）是否有引用任何依據文件（企業內部降額設計準則、或業界規範如GJB/Z 35等）？
+- 若完全沒有引用任何文件出處 → WARN，備註：「降額門檻未標明依據來源，無法確認80%/90%等數字是否為經過驗證的合理基準」
+
+**4. Component Spec 是否可追溯至原廠絕對最大額定值**
+- 報告的「Component Spec」欄位數字，是否有註明依據哪份原廠Datasheet（版次/Rev）？
+- 若只有Partno編號、沒有Datasheet引用 → WARN，備註：「Component Spec數值來源未附Datasheet佐證，無法排除誤植Typical值當Max值等填寫錯誤的可能」
+
+**5. Isurge/Vsurge 瞬態值是否有波形佐證與持續時間記錄**
+- 涉及Isurge（湧流電流）、Vsurge（突波電壓）的欄位，是否只有單一峰值數字，沒有示波器截圖或波形圖？
+- 是否記錄了瞬態發生的持續時間（ms等級）與觸發方式（開關機/模式切換等）？
+- 若只有數字沒有波形佐證 → WARN，備註：「Isurge/Vsurge僅提供峰值數字，無波形圖佐證，無法確認儀器取樣率是否足以捕捉真實峰值，亦無持續時間記錄」
+
+**6. 樣本數（Sample Size）**
+- 報告是否註明測試了幾台/幾片樣品？
+- 若完全未提及樣本數（只看得出型號，看不出台數）→ WARN，備註：「報告未註明樣本數，若僅為單一樣品數據，無法代表量產一致性（元件公差、佈線差異影響）」
+
+**7. 量測點可追溯性**
+- 是否有電路圖或測試點（Test Point）標示，說明各項數值是在哪個實體位置量測（如IC輸出腳位 vs 後級濾波電感之後）？
+- 若完全沒有量測點示意圖 → WARN，備註：「無量測點電路圖標示，無法確認數值量測位置，不同量測點可能導致數值有顯著差異」
+
+**8. 版本履歷**
+- 報告檔名或版號若標示非首版（如"1a"、"Rev.2"等），是否有版本異動說明（例如前版FAIL後修改設計重測）？
+- 若版號非首版但無任何版本異動說明 → WARN，備註：「報告版號顯示非首次測試，但無版本異動履歷，無法排除先前版本是否曾經FAIL，建議確認變更歷程」
+
+**9. 安規法規定位聲明**
+- 在最終判定說明中，務必附上以下定位聲明（不論本次判定為PASS/WARN/FAIL都要附上）：
+  「降額測試本身非強制性安規法規項目（不同於IEC 62368-1、EN 55032/55035等有法規強制要求送測驗證），屬企業自訂之可靠度工程規範。惟降額不足會提高熱能量源相關的安規測試（如異常溫升測試）失敗風險，並可能加速絕緣材料劣化、電容鼓包等長期安全風險，因此本報告結果應視為長期可靠度與間接熱安全風險評估的支撐證據之一，不可視為等同或取代安規測試報告。」`,
 
     CRYSTAL: `## 晶振頻偏測試審核規則
 
@@ -1932,7 +1995,11 @@ function buildPrompt() {
 - Eye Diagram Mask Hits = 0 → PASS；任何 Hits > 0 → FAIL
 - 差分輸出電壓（HS）：400 mV ≤ VDiff ≤ 600 mV
 - 上升/下降時間：≤ 500 ps（20%～80%）
-- Margin < 10% → WARN`,
+- Margin < 10% → WARN
+
+### 開區間規格與跨批次趨勢
+- 若規格只設下限（如Rise/Fall Time只有下限300ps，上限欄位為「N.A.」），代表數值再怎麼變大都不會觸發FAIL，這是規格本身的設計風險，不是測試錯誤——說明中提醒「此規格為開區間，若數值持續往無上限方向偏移，即使長期都PASS也不會被攔截，建議留意」
+- 若報告中能看出測試日期、儀器序號或韌體版本，且有多筆同型號不同時間點的數據可比對：若同一測項的實測值（如Edge Rate、Rise/Fall Time）相對先前批次有系統性偏移（變化超過15%）即為顯著趨勢，即使仍PASS → WARN，備註「與先前批次相比裕量呈系統性衰退趨勢，可能反映連接器/走線寄生特性改變、探頭校準點不同或板材批次差異，建議追蹤原因」（實務參考：曾發生USB2.0 Rise/Fall Time在兩批次間變慢25~30%、USB3.0 LFPS Rise/Fall Time變慢近2倍的案例，兩者當時margin仍充足而未被規格攔截，凸顯此類趨勢提示的必要性）`,
 
     USB2_DEVICE: `## USB 2.0 Device 訊號完整性測試規則
 
@@ -1957,7 +2024,10 @@ Summary Failed = 0 → PASS；任何 Failed > 0 → FAIL（即使封面寫 Pass 
 |-----|-----|
 | Short/Far End DJ | ≤ 86 ps |
 | Short/Far End TJ | ≤ 132 ps |
-| Short/Far End Mask | Hits = 0 |`,
+| Short/Far End Mask | Hits = 0 |
+
+### 跨批次趨勢比對
+若報告可見探頭序號、韌體版本、測試日期，且有多筆同型號不同時間點數據可比對：LFPS Rise/Fall Time等裕量若相對先前批次有系統性衰退（即使仍遠低於硬限、Margin仍很大）→ WARN，備註「與先前批次相比裕量呈系統性衰退趨勢，建議追蹤是否為探頭/韌體版本差異或實際訊號劣化」`,
 
     RELIABILITY_CVTE: `## 可靠性試驗審核規則
 
@@ -1967,7 +2037,17 @@ Summary Failed = 0 → PASS；任何 Failed > 0 → FAIL（即使封面寫 Pass 
 | FAIL | FAIL（必須列入問題項）|
 | N/A + 說明「PVT才測」或「不適用」| NA（正常）|
 | N/A 無說明、或「進行中」| WARN |
-| 空白 | WARN |`,
+| 空白 | WARN |
+
+### 矛盾偵測（務必逐項核對，不能只看封面）
+- 封面/總表判定為 PASS，但逐項清單裡任一子項為 FAIL → CONTRADICTION
+- 封面/總表判定為 FAIL，但逐項清單全部為 PASS → CONTRADICTION，備註「封面結論與逐項數據不符，需確認是否為文件更新遺漏」
+- 正確情況：封面為 FAIL 且能對應到逐項清單中至少一個 FAIL 項目 → 非矛盾，屬正常判定
+
+### 根因方向初步提示（僅供參考，非最終結論）
+- 包裝類測試（跌落/振動/堆疊/翻倒）FAIL，備註提到面板異常（如「陰陽屏」「花屏」）→ 提示：「可能為包裝緩衝設計或面板固定結構問題，建議會同包裝工程與結構工程共同確認根因，而非單純電路設計問題」
+- 氣候類測試（溫濕度循環）FAIL → 提示：「建議確認是否為電解電容/膠合材料在溫濕度交變下的劣化，非單一次性缺陷」
+- 驗收標準只寫「開機/關機正常」而無量化指標（如觸控精度、色彩偏移）→ WARN，備註「判定標準過於定性，可能無法偵測輕微劣化」`,
 
     DIFF_IMPEDANCE: `## 差分阻抗測試審核規則
 
@@ -1981,7 +2061,11 @@ Summary Failed = 0 → PASS；任何 Failed > 0 → FAIL（即使封面寫 Pass 
 
     TEMP_RISE: `## 溫升試驗審核規則（IEC 62368-1 Annex M）
 
-### 元件溫度限值
+### 一、報告完整度前置檢查
+- 是否記錄測試時長、是否達到溫度穩態（連續量測溫度不再上升）？未記錄時長 → WARN，備註「未記錄測試時長，無法確認溫度是否已達穩態，實測值可能只是瞬時值而非最嚴重狀態」
+- 是否記錄測試工況（如影片播放/背光/音量/USB負載組合）？只挑輕負載工況而非最大負載 → WARN
+
+### 二、元件溫度限值
 | 元件類別 | 限值 |
 |---------|-----|
 | 電感/變壓器（E 級絕緣）| ≤ 130°C |
@@ -1989,16 +2073,31 @@ Summary Failed = 0 → PASS；任何 Failed > 0 → FAIL（即使封面寫 Pass 
 | 電解電容（85°C 規格）| ≤ 85°C |
 | 光耦（PC817 類）| ≤ 100°C |
 | PCB 板面（FR4）| ≤ 130°C |
-距限值 < 5°C → WARN
 
-### 可觸及表面限值（IEC 62368-1 Table 11）
+**裕量計算方式：裕量% = (限值−實測值) / 限值 × 100%，不是只看絕對溫差幾度。**
+- 裕量% < 10% → WARN，即使數值仍在限值內也要標註，備註「裕量僅[X]%，屬熱設計臨界點，量產一致性稍有偏差就可能超標，建議留意製程一致性風險」
+- 例：限值110°C、實測106.3°C，絕對溫差3.7°C看似不大，但裕量% = 3.7/110 = 3.4%，遠低於10%門檻，仍須標WARN
+若同一元件同時列出「器件規格Tc」與「法規限值」兩欄且不一致，以較嚴格（較低）者為準判定，並於說明中指出兩者差異
+
+### 三、可觸及表面限值（IEC 62368-1 Table 11，一般性分類，實際材質分類請以標準原文為準）
 | 部位 | 限值 |
 |-----|-----|
 | 可觸及塑膠外殼 | ≤ 56°C |
-| 可觸及金屬外殼 | ≤ 70°C |`,
+| 可觸及金屬外殼 | ≤ 70°C |
+注意：標準原文對可觸及表面依材質與接觸時間可能有更細的分類，若報告分類方式與此簡化表有出入，不要直接判錯，註明「請核對標準原文確認分類是否正確」`,
 
     SAFETY_IEC62368: `## IEC 62368-1 安規測試審核規則
 
+### 報告完整度前置檢查
+- 是否記錄測試當下環境溫濕度？未記錄 → WARN，備註「介電強度等測試結果可能受濕度影響，缺少環境記錄」
+- 是否標明標準版次（如62368-1:2018或含修正案）？未標明 → WARN
+- 機構強度測試（穩態力/衝擊）是否只寫PASS結論，沒有測試後外觀/裂痕檢查的具體記錄？→ WARN，備註「僅有結論性PASS，缺乏測試後檢查細節」
+- 耐壓測試是否說明電壓爬升方式（緩升到目標值 vs 直接階躍）？未說明 → WARN（方法學可能影響公正性）
+- **關鍵規格變更後複測完整度檢查（重要）**：找出報告封面/銘牌欄位的額定電壓/電流/功率（Rating）。若能得知這份報告與同產品其他階段報告的Rating不同（例如額定電流從3.5A變3.0A）→ 代表電源迴路/變壓器/電源模組可能有設計變更。此時若「Touch current」「Electric strength（耐壓）」「接地電阻」「Limited Power Sources」等直接受電源迴路設計影響的項目標示「×／N/A（未測試）」→ WARN，備註「額定規格已變更但關鍵安規項目未複測，可能存在用舊規格數據默認新規格合規的驗證缺口，建議向實驗室確認略過原因」
+- 若無法得知是否有其他階段報告可比對，僅單獨審這一份時，仍應檢查：本報告內若Rating與封面其他欄位（如功率=電壓×電流）數字對不起來 → WARN
+- **PS/ES/TS分類等級標示**：IEC 62368-1採用Hazard-Based Safety Engineering，各能量源應標示分類等級（電源分類PS1/PS2/PS3、能量源分類ES1/ES2/ES3等）。若報告完全沒有標示這些分類等級 → WARN，備註「未標示PS/ES等分類等級，建議補充以利判斷各項防護措施是否對應正確等級」（此為完整度提醒，不影響既有數據本身的合格性）
+
+### 測試項目與限值
 | 測試項目 | 規格 | FAIL |
 |---------|-----|------|
 | 接觸電流（次級端子）| < 1 mA | ≥ 1 mA |
@@ -2009,15 +2108,29 @@ Summary Failed = 0 → PASS；任何 Failed > 0 → FAIL（即使封面寫 Pass 
 | 絕緣電阻 | ≥ 250 MΩ（500 Vdc）| < 250 MΩ |
 | 接地連續性 | ≤ 0.1 Ω | > 0.1 Ω |`,
 
-    ENERGY_EFFICIENCY: `## 能效測試審核規則（EU 2019/2021）
+    ENERGY_EFFICIENCY: `## 能效測試審核規則（EU 2019/2021 + EU 2019/2013）
 
+### 一、EU 2019/2021（待機/關機功耗，強制）
 | 功耗模式 | 限值 | FAIL |
 |---------|-----|------|
 | Standby mode | < 0.5 W | ≥ 0.5 W |
 | Automatic standby mode | < 0.5 W | ≥ 0.5 W |
 | Off mode | < 0.3 W | ≥ 0.3 W |
 | Network standby mode | < 2.0 W | ≥ 2.0 W（若有此模式）|
-Peak luminance ratio < 65% → WARN（測試前提可能無效）`,
+Peak luminance ratio < 65% → WARN（測試前提可能無效）
+
+### 二、Peak Luminance Ratio 規格門檻變更偵測（最高優先級，務必檢查）
+- 找出「Peak luminance ratio」這一欄的「Requirement」文字與實際數值
+- 若Requirement欄位寫的是「Reference only, unnecessary」「僅供參考」等非強制文字，但**同時該數值明顯偏低（< 65%）** → 不可因為Requirement欄位說「不需要」就略過，直接判 **CONTRADICTION**，備註：「Peak luminance ratio實測僅[X]%，數值本身明顯偏低；若此欄位在同產品其他階段報告中曾標示為硬性門檻（如≥65%），此處卻改標『僅供參考』，屬於規格要求被悄悄降級以規避不達標判定的疑慮，須人工確認是否為報告模板前後版本不一致，或刻意調整判定基準，不可逕行採信本報告自己的PASS結論」
+- 若Requirement欄位明確寫數值門檻（如≥65%）且實測值達標 → 正常PASS
+- 此檢查邏輯同樣適用於其他任何「規格要求」欄位在報告中出現「數值不理想但同時被標記為非強制/參考用」的組合，一律視為高度可疑，須CONTRADICTION等級提示
+
+### 三、EU 2019/2013（能效標籤分級，重要：即使報告本身標「Reference only, unnecessary」也必須檢查並回報）
+- **無論報告是否把這段標記為「參考用/不需要」，都必須在審核結果中明確列出這個等級**，不能因為報告自己排除就略過
+- 等級 F 或 G → WARN，備註：「能效等級為[X]級，屬於後段班；EU 2019/2013 能效標籤為強制標示法規，並非報告自行標註的『參考用』即可豁免，建議與法規/品保部門確認此產品類別是否適用強制標示，以及是否有排除條款」
+- 等級 D 或 E → WARN，備註：「能效等級為[X]級，建議留意是否影響歐盟市場能效標示合規與後續法規門檻收緊」
+- 等級 A~C → 不特別標註，但仍在報告中列出實際等級供PDM參考
+- 若報告完全找不到 Energy Efficiency Index/Class 欄位 → WARN，備註「報告缺少EU 2019/2013能效等級數據，無法確認標籤合規」`,
 
     OTA_WIRELESS: `## OTA 無線性能測試審核規則（CTIA）
 
@@ -2027,7 +2140,16 @@ Peak luminance ratio < 65% → WARN（測試前提可能無效）`,
 | WiFi 2.4G/5G | TIS | ≤ −50 dBm | > −50 dBm |
 | Bluetooth | TRP | ≥ −6 dBm | < −6 dBm |
 | Bluetooth | TIS | ≤ −50 dBm | > −50 dBm |
-欄位填「未測到」→ WARN`,
+欄位填「未測到」→ WARN，且需與數值超標的FAIL分開標註：
+  - 數值超標（如 TIS = -44dBm > -50dBm門檻）→ 明確FAIL，屬產品接收性能不足
+  - 「未測到」→ WARN，備註「本項顯示未偵測到訊號，可能為測試治具/設定異常導致測試無效，而非產品缺陷，建議先確認測試流程再判定，不宜直接歸類為產品FAIL」
+
+### 法規符合性提醒
+本表為CTIA一般性建議門檻，實際銷售地區（如台灣NCC、中國SRRC、美國FCC等）可能各自訂有不同或更嚴格的接收靈敏度/發射功率要求。若報告未註明對應哪個地區的法規版本 → WARN，備註「請確認此門檻是否為目標銷售市場最嚴格的法規要求，CTIA門檻不能自動視為所有市場都合規」
+
+### 表頭合併儲存格解析防呆（重要）
+- 部分報告的表頭會把TRP與TIS的門檻擠在同一儲存格內（如文字顯示為「≥2 ≤-50」），代表「TRP≥2dBm 且 TIS≤-50dBm」兩個獨立門檻合併呈現，不是單一數值
+- 判讀時務必先拆解成兩個獨立門檻分別比對，不可誤解讀成單一規格區間（如誤判成「介於2到-50之間」），避免因表格排版緊縮而誤判合格與否`,
 
     SOFTWARE_FUNCTIONAL: `## 整機軟體功能測試審核規則
 
@@ -2036,14 +2158,22 @@ Peak luminance ratio < 65% → WARN（測試前提可能無效）`,
 | Pass / 通過 / OK | PASS |
 | Fail / 失敗 / NG | FAIL（列出問題描述）|
 | TBD / 待確認 / N/A（無說明）| WARN |
-| N/A（明確說明不適用）| NA |`,
+| N/A（明確說明不適用）| NA |
+
+### 共因性缺陷聚合（重要，避免把同根因缺陷拆成多條孤立FAIL）
+- 掃描所有FAIL項目，若發現**同一種故障模式（如Display信息異常、聲卡辨識異常、EDID讀取異常）在多個不同通道/端口（如HDMI/Type-C/DP/PC）重複出現** → 這高度疑似單一根因（如EDID韌體、驅動命名規則）導致的連鎖失敗，而非多個獨立缺陷
+- 此時不要逐條列成N個孤立FAIL，改為：先列出「疑似共因性缺陷」區塊，說明「[故障模式]在[通道清單]共X個通道重複出現，疑似同一根因（如驅動/韌體命名問題），建議優先排查共同根因而非逐一修復」，再各別列出受影響的通道供追蹤
+- 若FAIL項目彼此故障模式不同、看不出關聯，則正常逐條列示，不要牽強套用共因性判斷
+- 若某測項的「預期結果/規格要求」寫「與PRD一致」「與需求一致」「與規格書一致」「與定制需求一致」等字樣，且報告本身未附上PRD/規格書的具體數值 → 該項判 WARN，備註「判定依據為外部文件（PRD/CPLM等），本報告未內含可驗證數值，僅能確認測試結果欄位填寫，無法獨立驗證是否真的與需求相符」
+- 缺陷等級（如A/B分級）與測試案例本身的Pass/Fail是兩個維度，須分開統計：先列整體模組Pass/Fail比例，再獨立列出缺陷等級分佈（A級缺陷須特別標示並提醒優先處理）
+- 測試結果欄位若為圖表/截圖形式（如白平衡校正、色域測試），文字擷取可能遺漏，若懷疑有缺漏數據 → WARN，備註「本測項可能包含圖像/截圖數據，純文字擷取無法完整驗證，建議人工複核原始報告」`,
 
     OTHER: `## 自動識別模式
 請從報告標題和測試內容自行判斷類型，套用對應標準審核。
 結果開頭說明：「識別為 XXX 測試報告，套用 XXX 審核規則。」`
   };
 
-  const rule = typeSpecificRules[selectedType] || typeSpecificRules['OTHER'];
+  const rule = UNIVERSAL_CHECKLIST + '\n\n' + (typeSpecificRules[selectedType] || typeSpecificRules['OTHER']);
 
   // system：角色定義 + 規則 + 強制格式（這層模型服從度最高）
   const systemPrompt = `你是一位資深硬體測試工程師，負責審核 IFP 互動式電子白板開發階段的測試報告。
@@ -2104,34 +2234,83 @@ ${rule}
     '',
     '## 輸出報告格式（重要）',
     '',
-    '完成逐項審核後，請將完整審核結果製作成一份獨立的 HTML 報告檔案。',
+    '完成逐項審核後，請製作可下載的獨立 HTML 報告，支援兩個版本：',
     '',
-    '### HTML 報告規格',
+    '---',
     '',
-    '**報告頂端摘要區：**',
-    '- 報告標題（含檔案名稱、測試階段、審核日期）',
-    '- 整體判定結果大字顯示（PASS 綠色 / FAIL 紅色 / WARN 橘色 / CONTRADICTION 紫色）',
-    '- 統計數字：PASS 幾項、FAIL 幾項、WARN 幾項、CONTRADICTION 幾項',
+    '【A. PDM 作業版（預設開啟，不需密碼）】',
     '',
-    '**逐項審核表格欄位：**',
-    '序號 ｜ 子模組 ｜ 測試項目 ｜ 規格限值 ｜ 實測值 ｜ 裕量 ｜ AI判定 ｜ 說明',
+    '表格欄位：序號 | 子模組 | 測試項目 | 規格限值 | 實測值 | 裕量 | AI判定 | 說明',
     '',
-    '**表格列顏色：**',
+    '每一條審核列（tr[data-row-id][data-verdict]）下方緊接一個 tr.pdm-row[data-ref=rowId]，包含：',
+    '  - 處置動作 select.action-sel（選項：— 未標記 / ✓ 確認有效 / 🚫 對外隱藏 / ⏸ 暫不處理 / ❌ 誤判）',
+    '  - 備注 input.note-input（placeholder="備注（選填）"）',
+    '  pdm-row 預設顯示，不需密碼，所有列預設完整顯示，PDM 自行決定每列處置方式。',
+    '',
+    'JS setAction(id, sel)：',
+    '  sel.dataset.v = sel.value;',
+    '  const row = document.querySelector(`tr[data-row-id="${id}"]`);',
+    '  row.setAttribute("data-action", sel.value);',
+    '  row.classList.toggle("action-hide", sel.value === "hide");',
+    '  localStorage.setItem(LS_PREFIX + "action_" + id, sel.value);',
+    '  const pitem = document.querySelector(`[data-ref="${id}"].priority-item`);',
+    '  if (pitem) pitem.style.display = sel.value === "hide" ? "none" : "";',
+    '  recalcStats();',
+    '  （必須用 setAttribute 寫 data-action，outerHTML 才能讀到）',
+    '',
+    'DOMContentLoaded：從 localStorage 恢復 action/note，呼叫 recalcStats()。',
+    '',
+    'CSS：',
+    '  tr[data-action=hide] td { opacity:.35; background:#fef2f2!important; text-decoration:line-through }',
+    '  select.action-sel[data-v=hide] { border-color:#f87171; background:#fef2f2; color:#dc2626; font-weight:600 }',
+    '  select.action-sel[data-v=ok]   { border-color:#34d399; background:#ecfdf5; color:#065f46; font-weight:600 }',
+    '',
+    '頂端統計欄加「🚫 對外隱藏：N 項」計數（id=countHidden）。',
+    '',
+    '---',
+    '',
+    '【B. 對外版（右下角固定「📤 產出對外版報告」按鈕）】',
+    '',
+    '點擊按鈕顯示自訂確認 modal（禁用 confirm()），確認後執行 doExport()：',
+    '',
+    'Step1. html = "<!DOCTYPE html>\\n" + document.documentElement.outerHTML',
+    'Step2. 讀 localStorage，對每個 action=hide 的 rowId，用 RegExp 從 html 字串移除：',
+    '       tr[data-row-id="RXX"]（含其 pdm-row），以及底部問題摘要的 [data-ref=RXX]',
+    'Step3. 用 regex 移除所有剩餘的 tr.pdm-row（去除 PDM 操作列）',
+    'Step4. 移除 <script> tags、匯出按鈕、確認 modal',
+    'Step5. 每個保留列右側加一欄「PDM判定」td：',
+    '       確認有效→綠色膠囊標籤、暫不處理→黃色、誤判→紫色、未標記→灰色',
+    '       備注用藍色斜體顯示於標籤下方',
+    '       thead 加 <th>PDM判定</th>',
+    'Step6. 注入對外版美化 CSS：',
+    '       漸層標題列（#1a3ccc → #4a6ef5）',
+    '       表格 hover #f0f9ff；Badge 圓角膠囊樣式',
+    '       底部加免責聲明：「本報告由 AI 初審後經 PDM 確認，僅供外部單位參考使用。」',
+    '       右下角固定「🖨 列印」按鈕（onclick=window.print()）',
+    'Step7. 標題加（對外版），副標加產出時間戳',
+    'Step8. 重算頂端統計數字，移除「對外隱藏」計數',
+    'Step9. Blob + URL.createObjectURL 下載 filename_對外版_日期.html',
+    'Step10. 下載後清除本報告 localStorage 快取（clearReportCache()），頁面顯示「✅ 對外版已下載，快取已清除」',
+    '',
+    '---',
+    '',
+    '【localStorage 防污染（重要）】',
+    '每份報告定義唯一前綴 LS_PREFIX，格式：機種型號_測試類型_產出日期_',
+    '例：const LS_PREFIX = "IFP5551_EMS_20250701_";',
+    '所有 localStorage 存取改為：localStorage.setItem(LS_PREFIX + "action_" + id, val)',
+    'LS_PREFIX 定義在 script 最頂端，DOMContentLoaded restore 也必須使用 LS_PREFIX。',
+    '',
+    'clearReportCache()：Object.keys(localStorage).filter(k=>k.startsWith(LS_PREFIX)).forEach(k=>localStorage.removeItem(k))',
+    '',
+    '---',
+    '',
+    '【樣式規格】',
     '- FAIL 列：淺紅色背景 #fff0f0',
     '- WARN 列：淺黃色背景 #fffbe6',
     '- PASS 列：淺綠色背景 #f0fff4',
     '- CONTRADICTION 列：淺紫色背景 #faf0ff',
-    '',
-    '**AI判定欄位顯示為彩色 Badge：PASS 綠 / FAIL 紅 / WARN 橘 / CONTRADICTION 紫**',
-    '',
-    '**報告底部摘要區：**',
-    '- 列出所有 FAIL 項目：名稱 + 問題描述 + 建議處理方式',
-    '- 列出所有 WARN 項目：名稱 + 風險說明',
-    '',
-    '**樣式要求：**',
-    '- 頂端藍色漸層 Header',
-    '- 白色背景，表格清晰邊框，Microsoft JhengHei 字型',
-    '- 適合列印（print CSS）',
+    '- AI判定欄 Badge：PASS 綠 / FAIL 紅 / WARN 橘 / CONTRADICTION 紫',
+    '- 頂端藍色漸層 Header，白色背景，Microsoft JhengHei 字型，適合列印',
     '',
     '請將完整 HTML 報告放在程式碼區塊內輸出，確保可獨立開啟。',
   ].join('\n');
@@ -2153,7 +2332,6 @@ async function startAnalysis() {
   }));
 
   // reset UI
-  document.getElementById('idleState').style.display = 'none';
   document.getElementById('scanContainer').classList.add('active');
   document.getElementById('resultsArea').innerHTML = '';
   document.getElementById('errorBox').style.display = 'none';
@@ -2198,8 +2376,7 @@ async function startAnalysis() {
         }
         const pagesToRead = Math.min(totalPages, MAX_PAGES);
         addLog(`讀取 PDF（共 ${totalPages} 頁${totalPages > MAX_PAGES ? '，截取前' + MAX_PAGES + '頁' : ''}）`, true);
-        const pagesEl = document.getElementById('fileInfoPages');
-        if (pagesEl) pagesEl.textContent = totalPages + ' 頁';
+
         // 更新 fileName 顯示含頁數
         const fnEl = document.getElementById('fileName');
         if (fnEl && selectedFile) fnEl.textContent = selectedFile.name + ' (' + (selectedFile.size/1024/1024).toFixed(1) + ' MB · ' + totalPages + ' 頁)';
@@ -2275,14 +2452,33 @@ async function startAnalysis() {
       });
       const header = headerLines.join('\n');
 
-      // 分三類收集，確保最重要的先進去
+      // 分四類收集，確保最重要的先進去
       const failLines   = [];  // 超標：Margin 負數
       const passLines   = [];  // PASS/FAIL 結論行
       const warnLines   = [];  // 接近超標：Margin 0~6
+      const flagLines   = [];  // 字母等級判定 / 外部依賴文字 / 未測到 / 僅供參考類，容易被前三類規則漏掉
+
+      // 這些關鍵字不含PASS/FAIL、也不一定是數字型超標，
+      // 但過去實測發現AI審核最容易漏掉的資訊都藏在這幾類字樣裡
+      // （例如能效等級G/E被報告自己標「參考用」而排除判定、外部依賴PRD、RF測試未偵測到訊號等）
+      const FLAG_PATTERNS = [
+        /Efficiency\s*Index|能效等級|能效.*[等分]?級|Energy.*Class/i,
+        /Class\s*[:：]?\s*[A-G]\b/,
+        /Reference only|unnecessary|仅供参考|僅供參考|参考用|參考用/i,
+        /与需求一致|與需求一致|与PRD一致|與PRD一致|与规格书一致|與規格書一致|与定制需求一致|與定制需求一致/,
+        /未测到|未測到|not detected/i,
+        /进行中|進行中|TBD|待确认|待確認/,
+        /Test Mode|Max Load|Ambient Temperature|Chamber temperat/i,
+        /Datasheet|Data\s*Sheet|规格书|規格書/i,
+        /Sample\s*(Size|Qty|Q'ty)|样品数|樣品數|测试数量|測試數量/i,
+        /Rev[\.\s]?[0-9]|版号|版號|Rev[:：]/i,
+        /Isurge|Vsurge|湧流|突波/i,
+      ];
 
       for (const line of lines.slice(100)) {
         const t = line.trim();
         if (!t || t.length < 3) continue;
+        if (FLAG_PATTERNS.some(p => p.test(t))) { flagLines.push(line); continue; }
         if (/-[0-9]+\.[0-9]/.test(t)) { failLines.push(line); continue; }
         if (/\bFAIL\b|\bNG\b/.test(t))  { passLines.push(line); continue; }
         if (/\bPASS\b|\bOK\b/.test(t))  { passLines.push(line); continue; }
@@ -2293,10 +2489,12 @@ async function startAnalysis() {
         }
       }
 
-      // 超標行優先，確保 FAIL 原因一定在截取範圍內
+      // 超標行優先，確保 FAIL 原因一定在截取範圍內；flagLines緊接在後，避免被9000字元截斷砍掉
       const dataSection = [
         '--- 超標數據行（Margin < 0）---',
         ...failLines,
+        '--- 特殊標記行（等級判定/外部依賴/未測到/進行中，容易被忽略但需人工複核）---',
+        ...flagLines,
         '--- 測試項目結論（PASS/FAIL）---',
         ...passLines,
         '--- 接近超標（Margin 0~6dB）---',
@@ -2380,9 +2578,11 @@ async function startAnalysis() {
 
     window._lastRawText = text;
     renderMarkdown(text);
-    // 淡入動畫
+    saveToHistory(text, selectedFile?.name||'unknown',
+      (text.match(/(?:最終判定|整體判定)[：:]\s*\*{0,2}\s*(PASS|FAIL|WARN|CONTRADICTION)\s*\*{0,2}/) || [,'UNKNOWN'])[1],
+      window._lastUsedModel||'—');
     const ra = document.getElementById('resultsArea');
-    if (ra) { ra.style.opacity = '0'; ra.style.transition = 'opacity .4s'; requestAnimationFrame(() => { ra.style.opacity = '1'; }); }
+    if (ra) { ra.style.opacity='0'; ra.style.transition='opacity .4s'; requestAnimationFrame(function(){ ra.style.opacity='1'; }); }
     setStepStatus('render', 'done');
     setStep('✅ 審核完成');
     addLog('結果已顯示', true);
@@ -2593,64 +2793,59 @@ let _currentMode = 'auto';  // 'auto' | 'claude'
 
 function switchMode(mode) {
   _currentMode = mode;
-
-  // 切換按鈕狀態
   document.getElementById('modeAutoBtn').classList.toggle('active', mode === 'auto');
   document.getElementById('modeClaudeBtn').classList.toggle('active', mode === 'claude');
 
-  // claudePanel 現在是 main 的兄弟元素，直接顯示/隱藏
-  const mainPanel   = document.getElementById('mainPanel');
-  const claudePanel = document.getElementById('claudePanel');
-  const analyzeBtn  = document.getElementById('analyzeBtn');
+  const panelAuto   = document.getElementById('panelAuto');
+  const panelClaude = document.getElementById('panelClaude');
 
-  const analyzeBtnSection = document.getElementById('analyzeBtnSection');
   if (mode === 'claude') {
-    mainPanel.style.display   = 'none';
-    claudePanel.style.display = 'block';
-    if (analyzeBtnSection) analyzeBtnSection.style.display = 'none';
-    if (fileBase64) updateClaudePanel();
+    panelAuto.style.display   = 'none';
+    panelClaude.style.display = 'flex';
+    // 更新類型提示
     const reminder = document.getElementById('cmTypeReminder');
     const typeLabel = document.getElementById('cmCurrentType');
     if (reminder && typeLabel) {
       typeLabel.textContent = selectedType;
       reminder.style.display = 'block';
     }
+    // 若已有檔案，更新 Claude prompt
+    if (claudeFileBase64 || fileBase64) updateClaudePanel();
   } else {
-    mainPanel.style.display   = '';
-    claudePanel.style.display = 'none';
-    if (analyzeBtnSection) analyzeBtnSection.style.display = '';
+    panelAuto.style.display   = 'flex';
+    panelClaude.style.display = 'none';
   }
 }
 
 function updateClaudePanel() {
-  const prepareMsg   = document.getElementById('claudePrepareMsg');
-  const sendArea     = document.getElementById('claudeSendArea');
+  const prepareMsg = document.getElementById('claudePrepareMsg');
+  const sendArea   = document.getElementById('claudeSendArea');
+  const previewBox = document.getElementById('claudePromptPreview');
+  const hint       = document.getElementById('claudeCopiedHint');
 
-  const previewBox   = document.getElementById('claudePromptPreview');
-
-  if (!fileBase64) {
-    prepareMsg.style.display   = 'flex';
-    sendArea.style.display     = 'none';
-
+  const hasFile = !!(claudeFileBase64 || fileBase64);
+  if (!hasFile) {
+    if (prepareMsg) prepareMsg.style.display = 'flex';
+    if (sendArea)   sendArea.style.display   = 'none';
+    if (hint)       hint.style.display       = 'none';
     return;
   }
 
-  // 組合 Prompt（只取 system + user 格式的文字說明，不含報告內容本身）
+  // 組合 Prompt
   const p = buildPrompt();
+  const fname = (claudeSelectedFile || selectedFile)?.name || 'report.pdf';
   const previewPrompt = p.system + '\n\n---\n\n' + p.user +
-    '\n[附件：' + (selectedFile?.name || 'report.pdf') + '（請在 Claude.ai 上傳此 PDF）]';
-
-  // Claude.ai 模式加入 HTML 報告輸出指令
+    '\n[附件：' + fname + '（請在 Claude.ai 上傳此 PDF）]';
   const fullClaudePrompt = previewPrompt + (p.htmlInstruction || '');
+
   const previewLen = 1500;
-  previewBox.textContent = previewPrompt.slice(0, previewLen) + (previewPrompt.length > previewLen ? '\n\n...（已省略後段 HTML 報告輸出指令，共 ' + previewPrompt.length + ' 字元）' : '');
+  if (previewBox) previewBox.textContent = previewPrompt.slice(0, previewLen) +
+    (previewPrompt.length > previewLen ? '\n\n...（共 ' + previewPrompt.length + ' 字元）' : '');
   window._claudeFullPrompt = fullClaudePrompt;
 
-  prepareMsg.style.display = 'none';
-  sendArea.style.display   = 'block';
-  // copiedHint 重置
-  const hint = document.getElementById('claudeCopiedHint');
-  if (hint) hint.style.display = 'none';
+  if (prepareMsg) prepareMsg.style.display = 'none';
+  if (sendArea)   sendArea.style.display   = 'block';
+  if (hint)       hint.style.display       = 'none';
 }
 
 function sendToClaudeAI() {
@@ -2685,14 +2880,9 @@ function fallbackCopyText(text) {
 }
 
 function showClaudeSuccess() {
-  // 顯示「已複製」提示，不隱藏送出按鈕（讓用戶可以重送）
   const hint = document.getElementById('claudeCopiedHint');
   if (hint) hint.style.display = 'block';
-  // 將頁面滾動到貼上區
-  if (pasteArea) {
-    setTimeout(() => pasteArea.scrollIntoView({ behavior: 'smooth', block: 'center' }), 500);
-    pasteArea.focus();
-  }
+  showToast('✅ Prompt 已複製，Claude.ai 已開啟！', 'success', 4000);
 }
 
 function copyPromptAgain() {
@@ -2712,26 +2902,6 @@ const _origSetFile = typeof setFile === 'function' ? setFile : null;
 
 // ══ Claude.ai 模式下載功能 ═══════════════════════════════════════
 
-function onClaudeResultInput(textarea) {
-  const text = textarea.value.trim();
-  const meta    = document.getElementById('cmResultMeta');
-  if (text.length > 50) {
-    actions.style.display = 'flex';
-    // 分析內容摘要
-    const lines  = text.split('\n').length;
-    const chars  = text.length;
-    const tables = (text.match(/^\|/gm) || []).length;
-    const fails  = (text.match(/\bFAIL\b/g) || []).length;
-    const warns  = (text.match(/\bWARN\b/g) || []).length;
-    const pass   = (text.match(/\bPASS\b/g) || []).length;
-    meta.innerHTML = `${chars.toLocaleString()} 字元 · ${lines} 行 · 表格行 ${tables} · `
-      + `<span style="color:#16a34a;font-weight:600">PASS ${pass}</span> · `
-      + `<span style="color:#dc2626;font-weight:600">FAIL ${fails}</span> · `
-      + `<span style="color:#d97706;font-weight:600">WARN ${warns}</span>`;
-  } else {
-    actions.style.display = 'none';
-  }
-}
 
 function _downloadCSV(raw, fname, ts) {
   const lines = raw.split('\n');
@@ -2799,6 +2969,7 @@ function _generateReportHTML(raw, fname, stage, ts, dt, mode) {
 
   // ── Markdown → HTML（用於報告正文）──
   function mdToHtml(text) {
+    var rowCounter = 1;  // PDM data-row-id counter
     // 表格處理
     const withTables = text.replace(/((?:^\|.+\|\n?)+)/gm, function(block) {
       const rows = block.trim().split('\n');
@@ -2814,15 +2985,21 @@ function _generateReportHTML(raw, fname, stage, ts, dt, mode) {
             : cells.some(c => c==='CONTRADICTION') ? ' class="row-contradiction"'
             : cells.some(c => c==='WARN') ? ' class="row-warn"'
             : cells.some(c => c==='PASS') ? ' class="row-pass"' : '';
-          out += '<tr' + rc + '>' + cells.map(function(c) {
-            const badge = c==='PASS' ? '<span class="verdict-pass">PASS</span>'
-              : c==='FAIL'          ? '<span class="verdict-fail">FAIL</span>'
-              : c==='WARN'          ? '<span class="verdict-warn">WARN</span>'
-              : c==='CONTRADICTION' ? '<span class="verdict-cont">矛盾</span>'
-              : c==='NA'            ? '<span class="verdict-na">NA</span>'
+          var rowId = 'row-' + (rowCounter++);
+          var verdictCell = cells.find(function(c){return c==='PASS'||c==='FAIL'||c==='WARN'||c==='CONTRADICTION'||c==='NA';}) || '';
+          out += '<tr' + rc + ' data-row-id="' + rowId + '">' + cells.map(function(c) {
+            var badge = c==='PASS' ? '<span class="verdict-pass verdict-cell">PASS</span>'
+              : c==='FAIL'          ? '<span class="verdict-fail verdict-cell">FAIL</span>'
+              : c==='WARN'          ? '<span class="verdict-warn verdict-cell">WARN</span>'
+              : c==='CONTRADICTION' ? '<span class="verdict-cont verdict-cell">矛盾</span>'
+              : c==='NA'            ? '<span class="verdict-na verdict-cell">NA</span>'
               : esc(c);
             return '<td>' + badge + '</td>';
-          }).join('') + '</tr>';
+          }).join('') + '<td style="white-space:nowrap;width:1px">'
+            + '<span class="pdm-badge" style="font-size:10px;color:#9ca3af;margin-right:4px"></span>'
+            + '<button class="pdm-btn" onclick="toggleRow(\'' + rowId + '\',\'hidden\')" style="display:none;font-size:10px;padding:2px 6px;border:1px solid #fca5a5;background:#fee2e2;color:#dc2626;border-radius:4px;cursor:pointer;margin-right:2px">✕ 隱藏</button>'
+            + '<button class="pdm-btn" onclick="toggleRow(\'' + rowId + '\',\'visible\')" style="display:none;font-size:10px;padding:2px 6px;border:1px solid #86efac;background:#dcfce7;color:#16a34a;border-radius:4px;cursor:pointer">✓ 有效</button>'
+            + '</td></tr>';
         }
       });
       if (!isFirst) out += '</tbody>';
@@ -3021,8 +3198,11 @@ tbody tr:hover td{background:rgba(38,80,232,.03)}
   <div>審核結果為輔助參考，最終判定責任由工程師確認 · ${esc(dt)}</div>
   <div style="margin-top:8px"><a href="https://vsjaylin.github.io/ifp-review-backend/" target="_blank" style="color:rgba(255,255,255,.6);font-size:11px">🔗 返回 IFP 審核工具</a></div>
 </div>
-</body>
-</html>`;
+
+<!-- 本報告為 PDM 作業版 -->
+<div id="pdm-mode-notice" style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px 16px;margin:20px auto;max-width:1100px;font-size:12px;color:#9a3412">
+  📋 <strong>PDM 作業版</strong> — 請使用下方各列的處置選單標記後，按右下角「📤 產出對外版報告」產出乾淨版本
+</div>`;
 }
 
 function _downloadHTML(raw, fname, stage, ts, dt) {
@@ -3054,7 +3234,6 @@ function clearResult() {
   resultsArea.innerHTML = '';
   window._autoReviewRaw = null;
   window._lastRawText   = null;
-  if (!fileBase64) document.getElementById('idleState').style.display = 'flex';
   document.getElementById('errorBox').style.display  = 'none';
   document.getElementById('scanContainer').classList.remove('active');
   ['pdf','model','ai','render'].forEach(id => {
@@ -3078,7 +3257,6 @@ function undoClear(btn) {
   document.getElementById('resultsArea').innerHTML = undo.html;
   window._autoReviewRaw = undo.raw;
   window._clearUndoData = null;
-  document.getElementById('idleState').style.display = 'none';
   showToast('↩️ 已復原審核結果');
 }
 
@@ -3092,7 +3270,6 @@ function cancelAnalysis() {
     _coldTimer = null;
   }
   document.getElementById('scanContainer').classList.remove('active');
-  document.getElementById('idleState').style.display = 'flex';
   const btn = document.getElementById('analyzeBtn');
   if (btn) { btn.disabled = false; btn.innerHTML = '▶ 開始自動審核'; }
   const cancelBtn = document.getElementById('scanCancelBtn');
@@ -3217,6 +3394,57 @@ function downloadAutoResult(format) {
   if (format === 'csv') _downloadCSV(raw, fname, ts);
   else _downloadAutoHTML(raw, fname, stage, ts, dt);
 }
+
+// ── Claude 模式上傳 ──────────────────────────────────────────
+function handleClaudeFile(evt) {
+  const file = evt.target.files[0];
+  if (!file || file.type !== 'application/pdf') {
+    showToast('請選擇 PDF 檔案', 'warn'); return;
+  }
+  const MAX_MB = 20;
+  if (file.size > MAX_MB * 1024 * 1024) {
+    showToast('檔案太大（' + (file.size/1024/1024).toFixed(1) + ' MB），建議上限 ' + MAX_MB + ' MB', 'error', 5000); return;
+  }
+  claudeSelectedFile = file;
+  const zone = document.getElementById('claudeUploadZone');
+  const info = document.getElementById('claudeFileInfo');
+  const fnEl = document.getElementById('claudeFileName');
+  if (zone) zone.style.display = 'none';
+  if (info) info.style.display = 'flex';
+  if (fnEl)  fnEl.textContent = file.name + ' (' + (file.size/1024).toFixed(0) + ' KB)';
+
+  // 讀取 base64
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const arr = new Uint8Array(e.target.result);
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += 8192) {
+      chunks.push(String.fromCharCode.apply(null, arr.subarray(i, i+8192)));
+    }
+    claudeFileBase64 = btoa(chunks.join(''));
+    updateClaudePanel();
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function clearClaudeFile() {
+  claudeSelectedFile = null;
+  claudeFileBase64 = null;
+  const zone = document.getElementById('claudeUploadZone');
+  const info = document.getElementById('claudeFileInfo');
+  const inp  = document.getElementById('claudeFileInput');
+  if (zone) zone.style.display = '';
+  if (info) info.style.display = 'none';
+  if (inp)  inp.value = '';
+  // Reset send area
+  const sendArea  = document.getElementById('claudeSendArea');
+  const prepMsg   = document.getElementById('claudePrepareMsg');
+  const copiedHint = document.getElementById('claudeCopiedHint');
+  if (sendArea)  sendArea.style.display = 'none';
+  if (prepMsg)   prepMsg.style.display  = 'flex';
+  if (copiedHint) copiedHint.style.display = 'none';
+}
+
 </script>
 
 
