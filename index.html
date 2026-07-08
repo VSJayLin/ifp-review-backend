@@ -2243,7 +2243,7 @@ ${rule}
     '表格欄位：序號 | 子模組 | 測試項目 | 規格限值 | 實測值 | 裕量 | AI判定 | 說明',
     '',
     '每一條審核列（tr[data-row-id][data-verdict]）下方緊接一個 tr.pdm-row[data-ref=rowId]，包含：',
-    '  - 處置動作 select.action-sel（選項：— 未標記 / ✓ 確認有效 / 🚫 對外隱藏 / ⏸ 暫不處理 / ❌ 誤判）',
+    '  - 處置動作 select.action-sel（選項：— 未標記 / ✓ 確認有效 / 🚫 精簡隱藏 / ⏸ 暫不處理 / ❌ 誤判）',
     '  - 備注 input.note-input（placeholder="備注（選填）"）',
     '  pdm-row 預設顯示，不需密碼，所有列預設完整顯示，PDM 自行決定每列處置方式。',
     '',
@@ -2265,11 +2265,11 @@ ${rule}
     '  select.action-sel[data-v=hide] { border-color:#f87171; background:#fef2f2; color:#dc2626; font-weight:600 }',
     '  select.action-sel[data-v=ok]   { border-color:#34d399; background:#ecfdf5; color:#065f46; font-weight:600 }',
     '',
-    '頂端統計欄加「🚫 對外隱藏：N 項」計數（id=countHidden）。',
+    '頂端統計欄加「🚫 精簡隱藏：N 項」計數（id=countHidden）。',
     '',
     '---',
     '',
-    '【B. 對外版（右下角固定「📤 產出對外版報告」按鈕）】',
+    '【B. 精簡版（右下角固定「📤 產出精簡版報告」按鈕）】',
     '',
     '點擊按鈕顯示自訂確認 modal（禁用 confirm()），確認後執行 doExport()：',
     '',
@@ -2282,15 +2282,15 @@ ${rule}
     '       確認有效→綠色膠囊標籤、暫不處理→黃色、誤判→紫色、未標記→灰色',
     '       備注用藍色斜體顯示於標籤下方',
     '       thead 加 <th>PDM判定</th>',
-    'Step6. 注入對外版美化 CSS：',
+    'Step6. 注入精簡版美化 CSS：',
     '       漸層標題列（#1a3ccc → #4a6ef5）',
     '       表格 hover #f0f9ff；Badge 圓角膠囊樣式',
-    '       底部加免責聲明：「本報告由 AI 初審後經 PDM 確認，僅供外部單位參考使用。」',
+    '       底部加說明文字：「本報告由 AI 初審後經 PDM 確認，為內部作業精簡版。」',
     '       右下角固定「🖨 列印」按鈕（onclick=window.print()）',
-    'Step7. 標題加（對外版），副標加產出時間戳',
-    'Step8. 重算頂端統計數字，移除「對外隱藏」計數',
-    'Step9. Blob + URL.createObjectURL 下載 filename_對外版_日期.html',
-    'Step10. 下載後清除本報告 localStorage 快取（clearReportCache()），頁面顯示「✅ 對外版已下載，快取已清除」',
+    'Step7. 標題加（精簡版），副標加產出時間戳',
+    'Step8. 重算頂端統計數字，移除「精簡隱藏」計數',
+    'Step9. Blob + URL.createObjectURL 下載 filename_精簡版_日期.html',
+    'Step10. 下載後清除本報告 localStorage 快取（clearReportCache()），頁面顯示「✅ 精簡版已下載，快取已清除」',
     '',
     '---',
     '',
@@ -3201,7 +3201,7 @@ tbody tr:hover td{background:rgba(38,80,232,.03)}
 
 <!-- 本報告為 PDM 作業版 -->
 <div id="pdm-mode-notice" style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px 16px;margin:20px auto;max-width:1100px;font-size:12px;color:#9a3412">
-  📋 <strong>PDM 作業版</strong> — 請使用下方各列的處置選單標記後，按右下角「📤 產出對外版報告」產出乾淨版本
+  📋 <strong>PDM 作業版</strong> — 請使用下方各列的處置選單標記後，按右下角「📤 產出精簡版報告」產出乾淨版本
 </div>`;
 }
 
