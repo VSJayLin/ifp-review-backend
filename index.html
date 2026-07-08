@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IFP 測試報告審核工具 v4.21</title>
+<title>IFP 測試報告審核工具 v4.22</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -1232,7 +1232,7 @@ kbd { background:var(--card); border:1px solid var(--border); border-radius:4px;
     <button class="hdr-btn" onclick="openModal('limitPage')">⚠️ AI 審核限制</button>
     <button class="hdr-btn" onclick="showHistory()" title="最近審核記錄">📋 審核記錄</button>
     <button class="hdr-btn" onclick="copyShareUrl()" title="複製工具網址">🔗 分享工具</button>
-    <span class="version-tag">v4.21 · IFP QC</span>
+    <span class="version-tag">v4.22 · IFP QC</span>
   </div>
 </header>
 
@@ -1258,7 +1258,7 @@ kbd { background:var(--card); border:1px solid var(--border); border-radius:4px;
       </div>
       <div class="field-row">
         <span class="field-lbl">審核人</span>
-        <input class="field-input" id="reviewer" placeholder="PDM 姓名" />
+        <input class="field-input" id="reviewer" placeholder="審核人員姓名" />
       </div>
     </div>
 
@@ -1800,6 +1800,24 @@ function buildPrompt(batchFileTypes) {
 - **報告編號重複使用**：若能從上下文（檔名、標題）判斷這份報告的「報告編號」與其他階段（如EVT/DVT）報告編號相同 → WARN，備註「報告編號疑似跨階段重複使用，可能造成文件追溯錯亂，建議確認編號管理規範」
 - **版本迭代缺乏修訂說明**：若報告本身標示版號（如V1、V1.1、Rev.2、"1a"等）非首版，但找不到任何「本版異動內容」「Revision History」說明 → WARN，備註「版號顯示非首次發行，但無修訂履歷說明，無法得知本版與前版差異」
 - **開區間規格（Min/Max其中一邊為"/"）的正確解讀**：規格欄位若Min或Max其中一格是「/」，代表「此邊界無限制/未定義」，不能理解成數值0或無效——判斷時只用有值的那一邊界比對，並在說明中明確標註「該規格為開區間，僅單邊限制，若後續實測值持續往無限制方向偏移，建議留意是否該補上限值」
+### 7. WARN分級（重要，避免問題彙總被文件缺失類提醒淹沒）
+判定為WARN時，務必先分辨屬於下列哪一種，兩者在最終輸出時的呈現方式不同：
+
+**(a) 工程風險型WARN**——會影響產品實際可靠度、安全性、或判定結果本身可信度的發現，例如：
+- 數值超過建議追蹤門檻（如降額Warning門檻）但未達硬性上限
+- 測試條件未涵蓋最惡劣工況（如溫度單點測試、Max Load未涵蓋受測子系統）
+- 規格門檻疑似被悄悄改變
+- 裕量過小的臨界案例
+這類WARN**維持現狀**：正常列為Detail/Issues裡的獨立一列，需要工程師追蹤。
+
+**(b) 文件缺失型WARN**——單純是報告本身缺少某項行政/佐證資訊，不直接代表產品有問題，例如：
+- 缺樣本數、缺校正證書編號、缺測試人員簽名
+- 缺標準版本年份、缺量測點電路圖
+- 缺Datasheet引用、缺版本修訂履歷
+這類WARN**不要**在Detail/Issues裡各自佔一列——會讓問題彙總表被大量行政提醒淹沒，難以看出真正需要工程師處理的重點。改成：在Detail表對應列的「說明」欄位裡簡短註記即可（不變更該列PASS/WARN判定，除非同時有工程風險type(a)的理由），另外在Excel的Summary工作表彙整成一段「📋 報告完整度缺失清單」文字或簡短條列，跟工程風險分開呈現。
+
+判斷不確定屬於(a)還是(b)時，預設從嚴當作(a)處理（保留獨立列），避免真正的工程風險被誤歸類到行政缺失而被忽略。
+
 ### 重要：分析深度界線
 - 你不是拿著法規/標準原文逐條核對，是依報告內容本身的邏輯一致性去判斷。若遇到「這份報告是否符合某法規的細節分類」而你無法從報告內容本身確認（如標準條文的細部分類表），要明講「無法從本報告內容確認，建議查閱標準原文或請教法規/品保部門」，不要假裝確定。
 `;
@@ -2328,6 +2346,7 @@ ${rule}
     '- A1合併儲存格標題：報告名稱＋型號＋測試日期＋報告編號，藍底白字，字級16，列高加大',
     '- 下方統計區塊（用有底色的儲存格模擬卡片感）：總審核項 / PASS數 / WARN數 / FAIL數 / CONTRADICTION數，各自用綠/黃/紅/紫的淺色底填滿對應數字儲存格',
     '- 若有整體判定結論文字（PASS/WARN/FAIL），用粗體+對應顏色字體放在統計區塊下方',
+    '- **新增「📋 報告完整度缺失清單」區塊**：把所有「文件缺失型WARN」（缺樣本數、缺校正證書、缺標準版本年份等純行政/佐證資訊缺失，非工程風險）彙整成一段條列文字放在這裡，跟上方統計區塊分開。這些項目不佔用Detail/Issues的獨立列，只在這裡列一次',
     '',
     '【工作表二：逐項審核明細 Detail】',
     '欄位（第1列表頭，凍結窗格 freeze_panes="A2"）：',
@@ -2341,6 +2360,7 @@ ${rule}
     '  - 「PDM處置」欄位：用 openpyxl.worksheet.datavalidation.DataValidation 設定下拉選單，選項為「未標記,確認有效,暫不處理,誤判,精簡處理」，讓PDM點儲存格就能選，不需要手動輸入',
     '  - 欄寬依內容自動調整（可用簡單的字元長度估算設定 column_dimensions[col].width）',
     '  - 「說明」「PDM備注」欄位啟用自動換行 wrap_text=True，避免內容被截斷看不到',
+    '  - **文件缺失型WARN不獨立佔列**：這類發現只寫進對應測項那一列的「說明」欄位末尾（如「另：本項未附校正證書編號，屬文件完整度提醒，已彙整至Summary頁」），不要為了列出這個提醒額外新增一整列，也不要單獨為此把該列判定從PASS改成WARN',
     '',
     '【PDM列收合機制（重要：取代HTML版的隱藏功能，改用Excel原生的列群組）】',
     '- PDM若想把某些項目（例如AI誤判、判斷有爭議、暫不列入本次呈報重點的項目）收合起來不佔畫面，使用 Excel 原生的「群組大綱（Outline/Grouping）」功能，不要用刪除列或改變儲存格內容的方式：',
@@ -2354,7 +2374,8 @@ ${rule}
     '- 因為Excel本身就支援「選取多列→按住Ctrl一起選→設定同一個資料驗證值」，不需要額外做批次操作按鈕，這件事直接用Excel原生的複製/貼上或選取多列統一設值就能達成，請在工作表最上方或另一個「說明」工作表加一行文字提示PDM這個用法即可',
     '',
     '【工作表三：問題項目彙總 Issues】',
-    '- 只列出AI判定為 WARN / FAIL / CONTRADICTION 的項目，欄位同工作表二',
+    '- 只列出AI判定為 **工程風險型** WARN／FAIL／CONTRADICTION 的項目，欄位同工作表二',
+    '- 文件缺失型WARN不放進這張表（已彙整在Summary頁的「報告完整度缺失清單」），確保這張表維持精簡，只呈現真正需要工程師追蹤的項目',
     '- 用來讓PDM或主管快速看到需要留意的項目清單，不需要在滿版明細表裡逐列找',
     '',
     '【檔案輸出】',
