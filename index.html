@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IFP 測試報告審核工具 v4.32</title>
+<title>IFP 測試報告審核工具 v4.34</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -1247,7 +1247,7 @@ kbd { background:var(--card); border:1px solid var(--border); border-radius:4px;
     <button class="hdr-btn" onclick="openModal('limitPage')">⚠️ AI 審核限制</button>
     <button class="hdr-btn" onclick="showHistory()" title="最近審核記錄">📋 審核記錄</button>
     <button class="hdr-btn" onclick="copyShareUrl()" title="複製工具網址">🔗 分享工具</button>
-    <span class="version-tag">v4.32 · IFP QC</span>
+    <span class="version-tag">v4.34 · IFP QC</span>
   </div>
 </header>
 
@@ -2494,6 +2494,7 @@ Peak luminance ratio < 65% → WARN（測試前提可能無效）
 ${categoryHint}
 
 【絕對要求】
+0. **逐項覆蓋優先於精簡，這是本次任務最高優先原則**：報告封面/總表列出幾個測試項目，Detail就要對應幾列，不可以用「共N項全部PASS」這種總結句帶過、不可以為了輸出精簡而合併或省略項目。規則列得再詳細，若沒有逐項展開執行，等於沒有用——這條優先於下面任何其他要求，包括精簡度要求。
 1. 全部使用繁體中文回答，不得使用簡體中文、不得使用英文（專有名詞縮寫如 PASS/FAIL/THD 可保留）。**特別注意：若報告原文（PDF內容）本身是簡體中文，你仍必須主動轉換成繁體中文輸出，不可原樣照抄簡體字**——例如原文寫「测试」「报告」「结果」「软件」，你的輸出必須寫成「測試」「報告」「結果」「軟體」，逐字檢查輸出內容裡沒有任何簡體字殘留，包含標題、表格內容、說明文字全部都要轉換，不是只轉換你自己組織的句子而保留引用原文的部分
 2. 嚴格按照下方格式輸出，不得省略、不得加入格式以外的廢話
 3. 只分析報告中實際存在的數據，不捏造、不發揮、不聯想
@@ -2556,7 +2557,8 @@ ${rule}
     '- 逐項審核明細工作表（Detail）新增一欄「來源報告」，填入該列所屬的原始檔名，讓PDM清楚知道每一列數據來自哪一份報告',
     '- 總覽工作表（Summary）除了整體統計，另外列出一張「批次報告清單」小表：每一列對應一份收到的報告，欄位為「檔名 / 判定的報告類型 / 總審核項數 / PASS / WARN / FAIL / CONTRADICTION / 整體結論」，讓PDM一眼看出這批裡哪幾份報告有問題、哪幾份乾淨',
     '- 若各報告之間存在跨報告關聯（如同型號EVT/DVT不同階段、同一元件在不同報告出現），比照既有規則做跨報告比對（規格門檻變更、料號差異合理性判斷等），並在「問題項目彙總」工作表裡標明是屬於單一報告內的問題，還是跨報告比對出的問題',
-    '- 報告數量較多時，可考慮依報告類型分別建立獨立的Detail分頁（如「Detail_EMI」「Detail_安規」），但「批次報告清單」與「問題項目彙總」維持整合在同一張總覽性工作表，方便快速掃視全局',
+    '- **本批次超過1份報告時，強制規定**：必須依報告類型分別建立獨立的Detail分頁（如「Detail_EMI」「Detail_安規」），不可以合併成單一Detail分頁——這不是「可以考慮」的選項，是硬性規定。「批次報告清單」與「問題項目彙總」維持整合在同一張總覽性工作表',
+    '- **每份報告的Detail列數，不可少於該報告封面/總表本身列出的測試項目數**。例如：一份EMI報告封面總表列了6個標準項目（辐射Below1G/辐射Above1G/传导CE-AC/传导CE-Signal/谐波/闪烁），Detail頁至少要有6列對應，不可以只列2列就交差；一份EMS報告若總表列了6項（ESD/RS/EFT/Surge/CS/Dips），至少要有6列，不可以只列1列。**這是不合格的反例，絕對不要這樣做**：「EMI測試共6項全部PASS」壓縮成一句話或一列——每個標準項目都要是獨立一列，各自的測試標準、測試結果欄位都要填。',
     '',
     '【覆蓋矩陣（重要，批次報告屬同一變更案/同一機種時務必輸出）】',
     '- 判斷本次批次是否屬於同一變更案或同一機種的系列報告（可從型號、測試日期相近程度判斷）。若是，在Summary工作表額外輸出「覆蓋矩陣」小表：',
@@ -2608,6 +2610,14 @@ ${rule}
     '【檔案輸出】',
     '- 檔名格式：型號_測試類型_審核報告_日期.xlsx（若為批次多份，用「型號_批次審核報告_日期.xlsx」或以主要型號命名）',
     '- 產生後提供下載連結',
+    '',
+    '【完整性自我核對（重要，輸出Excel前必須執行，不可省略這一步）】',
+    '在你準備輸出最終Excel之前，回頭做這個檢查，這是強制關卡，不是可選步驟：',
+    '1. 針對每一份報告，回頭數一次：這份報告封面/總表/測試項目清單裡實際列出了幾個測試項目？（例如EMI報告總表列了幾個標準項目、EMS報告總表列了幾項、可靠性報告列了幾個子測項）',
+    '2. 比對：你在Detail頁為這份報告寫了幾列？如果你寫的列數明顯少於報告本身列出的項目數（例如報告總表有6項，你只寫了1~2列），代表你做了「總結式帶過」而不是「逐項展開」，這是不允許的，必須回頭補齊到跟報告本身項目數一致',
+    '3. 針對本次「各報告類型精準度推論對照」裡列為「高複雜度」的報告類型（EMI、EMS、DERATING、ENERGY_EFFICIENCY、RELIABILITY_CVTE、SAFETY_IEC62368、SOFTWARE_FUNCTIONAL），額外確認：是否真的執行了跨欄位裕量計算、料號差異三級判斷、MP縮測三條件判斷等規則裡要求的具體動作，而不是只讀封面PASS/FAIL就結案',
+    '4. 針對跨報告一致性（主機板/平台型號、韌體版本、日期），確認是否逐一比對過批次內每一份報告的型號欄位，而不是只挑幾份比對——若批次有7份報告涉及3種不同平台型號，必須全部3種都在覆蓋矩陣/一致性提醒裡點名，不可以只找到其中2種就當作找完了',
+    '此步驟做完、確認無漏項之後，才輸出最終Excel。**寧可Excel檔案大、內容多，也不要為了輸出精簡而犧牲逐項覆蓋率——這是本次任務最高優先原則，優先於任何簡潔性考量。**',
     '',
     '【回覆精簡度要求（重要）】',
     '- Excel檔案產生完成後，對話中只需一句話：「已完成審核，共N份報告/共X項，請下載Excel查看」，附上下載連結即可',
@@ -3225,20 +3235,26 @@ function sendToClaudeAI() {
   const prompt = window._claudeFullPrompt;
   if (!prompt) { showToast('請先上傳 PDF 報告', 'warn'); return; }
 
-  // 開啟 claude.ai（必須在點擊事件內同步執行，否則被 popup blocker 攔截）
-  const claudeWin = window.open('https://claude.ai/new', '_blank');
-  if (!claudeWin) {
-    showToast('⚠️ 瀏覽器封鎖彈出視窗，請手動開啟 claude.ai', 'warn', 6000);
+  // 重要：必須先複製剪貼簿（此時分頁仍有焦點，複製才會成功），
+  // 再開新視窗——順序反過來的話，開新視窗可能讓分頁失去焦點，
+  // 導致 clipboard API 靜默失敗，貼到 Claude.ai 會是空白內容
+  function afterCopy() {
+    // 複製完成後才開啟 claude.ai（必須仍在點擊事件的同步/微任務鏈內，避免被 popup blocker 攔截）
+    const claudeWin = window.open('https://claude.ai/new', '_blank');
+    if (!claudeWin) {
+      showToast('⚠️ 瀏覽器封鎖彈出視窗，請手動開啟 claude.ai，剪貼簿已備妥可直接貼上', 'warn', 6000);
+    }
+    showClaudeSuccess();
   }
 
-  // 複製 Prompt 到剪貼簿
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(prompt)
-      .then(() => showClaudeSuccess())
-      .catch(() => { fallbackCopyText(prompt); showClaudeSuccess(); });
+    navigator.clipboard.writeText(prompt).then(afterCopy).catch(() => {
+      fallbackCopyText(prompt);
+      afterCopy();
+    });
   } else {
     fallbackCopyText(prompt);
-    showClaudeSuccess();
+    afterCopy();
   }
 }
 
